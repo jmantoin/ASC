@@ -14,6 +14,7 @@ import Program.SymbolTable;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -21,1928 +22,1897 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Element;
+import UndoRedo.UndoableTextArea;
+
 // End imports
-
-public class ASCView extends javax.swing.JFrame
-{
-
-    /**
-     * Self-made instance variables
-     */
-    private MainControl mc;
-    // false - base 16, true - base 10
-    private static boolean baseMode = false;
-
-    /**
-     * Creates new form ASCView
-     */
-    public ASCView(MainControl mc)
-    {
-        this.mc = mc;
-
-        try {
-            // Set cross-platform Java L&F (also called "Metal")
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (Exception e) {
-        }
-
-        needsSaving = false;
-        initComponents();
-    }
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        fileChooser = new javax.swing.JFileChooser();
-        lines = new javax.swing.JTextArea("1");
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        register = new javax.swing.JPanel();
-        accField = new javax.swing.JTextField();
-        programCounter = new javax.swing.JTextField();
-        indexField1 = new javax.swing.JTextField();
-        indexField2 = new javax.swing.JTextField();
-        indexField3 = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        inputField = new javax.swing.JTextField();
-        outputField = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        assembleButton = new javax.swing.JButton();
-        jSeparator3 = new javax.swing.JSeparator();
-        jSeparator4 = new javax.swing.JSeparator();
-        jPanel3 = new javax.swing.JPanel();
-        jTextField4 = new javax.swing.JTextField();
-        OveBit = new javax.swing.JTextField();
-        negBit = new javax.swing.JTextField();
-        zerBit = new javax.swing.JTextField();
-        carBit = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        decimal = new javax.swing.JRadioButton();
-        hexadecimal = new javax.swing.JRadioButton();
-        editor = new javax.swing.JPanel();
-        jsp = new javax.swing.JScrollPane();
-        textarea = new javax.swing.JTextArea();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        errorConsole = new javax.swing.JTextArea();
-        jPanel2 = new javax.swing.JPanel();
-        emulateButton = new javax.swing.JButton();
-        step = new javax.swing.JButton();
-        reset = new javax.swing.JButton();
-        memory = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        memoryTable = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        hexPane = new javax.swing.JList();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        mnemonicPane = new javax.swing.JList();
-        menuBar = new javax.swing.JMenuBar();
-        menuOne = new javax.swing.JMenu();
-        mbFile = new javax.swing.JMenuItem();
-        mbSep1 = new javax.swing.JPopupMenu.Separator();
-        mbOpen = new javax.swing.JMenuItem();
-        mbSep2 = new javax.swing.JPopupMenu.Separator();
-        mbSave = new javax.swing.JMenuItem();
-        mbSaveAs = new javax.swing.JMenuItem();
-        mbSep3 = new javax.swing.JPopupMenu.Separator();
-        mbExit = new javax.swing.JMenuItem();
-        menuTwo = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        menuThree = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
-
-        fileChooser.setAccessory(mbOpen);
-        fileChooser.setCurrentDirectory(new java.io.File("C:\\Users\\Adam\\Desktop"));
-        fileChooser.setDialogTitle("Open File...");
-        fileChooser.setFileFilter(new GUI.FileFilter());
-
-        lines.setEditable(false);
-        lines.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        lines.setForeground(new java.awt.Color(0, 102, 102));
-        lines.setRows(5);
-        lines.setBackground(Color.LIGHT_GRAY);
-        jsp.setRowHeaderView(lines);
-
-        buttonGroup1.add(decimal);
-        buttonGroup1.add(hexadecimal);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ASC Assembler & Emulator");
-        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setMaximumSize(new java.awt.Dimension(1134, 768));
-        setMinimumSize(new java.awt.Dimension(1134, 768));
-        setPreferredSize(new java.awt.Dimension(1133, 768));
-        setResizable(false);
-
-        register.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Registers", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
-
-        accField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        accField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        accField.setText("0000");
-        accField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                accFieldActionPerformed(evt);
-            }
-        });
-        accField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                accFieldInputMethodTextChanged(evt);
-            }
-        });
-
-        programCounter.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        programCounter.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        programCounter.setText("0000");
-        programCounter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                programCounterActionPerformed(evt);
-            }
-        });
-
-        indexField1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        indexField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        indexField1.setText("0000");
-
-        indexField2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        indexField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        indexField2.setText("0000");
-
-        indexField3.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        indexField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        indexField3.setText("0000");
-        indexField3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                indexField3ActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel1.setText("ACC:");
-        jLabel1.setToolTipText("Accumulator");
-
-        jLabel2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel2.setText("PC:");
-        jLabel2.setToolTipText("Program Counter");
-
-        jLabel3.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel3.setText("Index 1:");
-
-        jLabel4.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel4.setText("Index 2:");
-
-        jLabel5.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel5.setText("Index 3:");
-
-        inputField.setEditable(false);
-        inputField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        inputField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        inputField.setText("0000");
-
-        outputField.setEditable(false);
-        outputField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        outputField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        outputField.setText("0000");
-
-        jLabel6.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel6.setText("Input:");
-
-        jLabel7.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel7.setText("Output:");
-
-        assembleButton.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        assembleButton.setText("Assemble");
-        assembleButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                assembleButtonActionPerformed(evt);
-            }
-        });
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel3.setPreferredSize(new java.awt.Dimension(140, 43));
-
-        jTextField4.setEditable(false);
-        jTextField4.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jTextField4.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField4.setText("0");
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
-            }
-        });
-
-        OveBit.setEditable(false);
-        OveBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        OveBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        OveBit.setText("0");
-        OveBit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OveBitActionPerformed(evt);
-            }
-        });
-
-        negBit.setEditable(false);
-        negBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        negBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        negBit.setText("0");
-        negBit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                negBitActionPerformed(evt);
-            }
-        });
-
-        zerBit.setEditable(false);
-        zerBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        zerBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        zerBit.setText("1");
-        zerBit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                zerBitActionPerformed(evt);
-            }
-        });
-
-        carBit.setEditable(false);
-        carBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        carBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        carBit.setText("0");
-        carBit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                carBitActionPerformed(evt);
-            }
-        });
-
-        jLabel8.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("C");
-        jLabel8.setToolTipText("Carry bit");
-
-        jLabel10.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("N");
-        jLabel10.setToolTipText("Negative bit");
-
-        jLabel11.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("Z");
-        jLabel11.setToolTipText("Zero bit");
-
-        jLabel12.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("V");
-        jLabel12.setToolTipText("Overflow bit (NOT USED IN ASC)");
-
-        jLabel13.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setText("I");
-        jLabel13.setToolTipText("Interrupt bit (NOT USED IN ASC)");
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(carBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(negBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(zerBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(OveBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(negBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(carBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(zerBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(OveBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        decimal.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        decimal.setText("Decimal");
-        decimal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                decimalActionPerformed(evt);
-            }
-        });
-
-        hexadecimal.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        hexadecimal.setSelected(true);
-        hexadecimal.setText("Hexadecimal");
-        hexadecimal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hexadecimalActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
-        register.setLayout(registerLayout);
-        registerLayout.setHorizontalGroup(
-            registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(22, 22, 22))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                        .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addGap(18, 18, 18)
-                        .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(accField, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                            .addComponent(programCounter))
-                        .addContainerGap())))
-            .addGroup(registerLayout.createSequentialGroup()
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(18, 18, 18)
-                                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(indexField1)
-                                    .addComponent(indexField2)
-                                    .addComponent(indexField3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jSeparator4)
-                            .addComponent(jSeparator3)
-                            .addGroup(registerLayout.createSequentialGroup()
-                                .addGap(28, 28, 28)
-                                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(outputField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(inputField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(registerLayout.createSequentialGroup()
-                                        .addGap(22, 22, 22)
-                                        .addComponent(jLabel6))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel7)
-                                        .addGap(11, 11, 11)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(registerLayout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(hexadecimal)
-                            .addComponent(decimal))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(registerLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(assembleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        registerLayout.setVerticalGroup(
-            registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(registerLayout.createSequentialGroup()
-                .addGap(7, 7, 7)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(programCounter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(accField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(indexField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(indexField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
-                .addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(indexField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(inputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(decimal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(hexadecimal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                .addComponent(assembleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        accField.getDocument().addDocumentListener(new DocumentListener()
-            {
-
-                public void changedUpdate(DocumentEvent e)
-                {
-                    warn();
-                }
-
-                public void removeUpdate(DocumentEvent e)
-                {
-                    warn();
-                }
-
-                public void insertUpdate(DocumentEvent e)
-                {
-                    warn();
-                }
-
-                public void warn()
-                {
-                    String acc = accField.getText().toUpperCase();
-                    try {
-                        int num = Integer.parseInt(acc);
-
-                        if (num != 0)
-                        setZerBit(false);
-                        else
-                        setZerBit(true);
-                    } catch (Exception e) {
-
-                    }
-                    if (!runInputCheck(acc)) {
-                        accField.setBackground(Color.red);
-
-                        if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
-                            errorConsole.setForeground(new Color(186, 31, 57));
-                            errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
-                        }
-
-                    } else {
-                        accField.setBackground(Color.white);
-                        errorConsole.setText("");
-                    }
-
-                }
-            });
-            programCounter.getDocument().addDocumentListener(new DocumentListener()
-                {
-
-                    public void changedUpdate(DocumentEvent e)
-                    {
-                        warn();
-                    }
-
-                    public void removeUpdate(DocumentEvent e)
-                    {
-                        warn();
-                    }
-
-                    public void insertUpdate(DocumentEvent e)
-                    {
-                        warn();
-                    }
-
-                    public void warn()
-                    {
-                        String acc = programCounter.getText().toUpperCase();
-
-                        if (!runInputCheck(acc)) {
-                            programCounter.setBackground(Color.red);
-
-                            if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
-                                errorConsole.setForeground(new Color(186, 31, 57));
-                                errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
-                            }
-
-                        } else {
-                            programCounter.setBackground(Color.white);
-                            errorConsole.setText("");
-                        }
-
-                    }
-                });
-                indexField1.getDocument().addDocumentListener(new DocumentListener()
-                    {
-
-                        public void changedUpdate(DocumentEvent e)
-                        {
-                            warn();
-                        }
-
-                        public void removeUpdate(DocumentEvent e)
-                        {
-                            warn();
-                        }
-
-                        public void insertUpdate(DocumentEvent e)
-                        {
-                            warn();
-                        }
-
-                        public void warn()
-                        {
-                            String acc = indexField1.getText().toUpperCase();
-
-                            if (!runInputCheck(acc)) {
-                                indexField1.setBackground(Color.red);
-
-                                if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
-                                    errorConsole.setForeground(new Color(186, 31, 57));
-                                    errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
-                                }
-
-                            } else {
-                                indexField1.setBackground(Color.white);
-                                errorConsole.setText("");
-                            }
-
-                        }
-                    });
-                    indexField2.getDocument().addDocumentListener(new DocumentListener()
-                        {
-
-                            public void changedUpdate(DocumentEvent e)
-                            {
-                                warn();
-                            }
-
-                            public void removeUpdate(DocumentEvent e)
-                            {
-                                warn();
-                            }
-
-                            public void insertUpdate(DocumentEvent e)
-                            {
-                                warn();
-                            }
-
-                            public void warn()
-                            {
-                                String acc = indexField2.getText().toUpperCase();
-
-                                if (!runInputCheck(acc)) {
-                                    indexField2.setBackground(Color.red);
-
-                                    if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
-                                        errorConsole.setForeground(new Color(186, 31, 57));
-                                        errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
-                                    }
-
-                                } else {
-                                    indexField2.setBackground(Color.white);
-                                    errorConsole.setText("");
-                                }
-
-                            }
-                        });
-                        indexField3.getDocument().addDocumentListener(new DocumentListener()
-                            {
-
-                                public void changedUpdate(DocumentEvent e)
-                                {
-                                    warn();
-                                }
-
-                                public void removeUpdate(DocumentEvent e)
-                                {
-                                    warn();
-                                }
-
-                                public void insertUpdate(DocumentEvent e)
-                                {
-                                    warn();
-                                }
-
-                                public void warn()
-                                {
-                                    String acc = indexField3.getText().toUpperCase();
-
-                                    if (!runInputCheck(acc)) {
-                                        indexField3.setBackground(Color.red);
-
-                                        if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
-                                            errorConsole.setForeground(new Color(186, 31, 57));
-                                            errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
-                                        }
-
-                                    } else {
-                                        indexField3.setBackground(Color.white);
-                                        errorConsole.setText("");
-                                    }
-
-                                }
-                            });
-
-                            editor.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Editor", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
-
-                            jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-                            textarea.setColumns(20);
-                            textarea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-                            textarea.setRows(5);
-                            textarea.addKeyListener(new java.awt.event.KeyAdapter() {
-                                public void keyTyped(java.awt.event.KeyEvent evt) {
-                                    textareaKeyTyped(evt);
-                                }
-                            });
-                            textarea.getDocument().addDocumentListener(new DocumentListener()
-                                {
-
-                                    public String getText()
-                                    {
-                                        int caretPosition = textarea.getDocument().getLength();
-                                        Element root = textarea.getDocument().getDefaultRootElement();
-                                        String text = "1" + System.getProperty("line.separator");
-                                        for (int i = 2; i < root.getElementIndex(caretPosition) + 2; i++) {
-                                            text += i + System.getProperty("line.separator");
-                                        }
-                                        return text;
-                                    }
-
-                                    @Override
-                                    public void changedUpdate(DocumentEvent de)
-                                    {
-                                        lines.setText(getText());
-                                    }
-
-                                    @Override
-                                    public void insertUpdate(DocumentEvent de)
-                                    {
-                                        lines.setText(getText());
-                                    }
-
-                                    @Override
-                                    public void removeUpdate(DocumentEvent de)
-                                    {
-                                        lines.setText(getText());
-                                    }
-                                });
-                                jsp.setViewportView(textarea);
-
-                                jScrollPane5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-
-                                errorConsole.setBackground(new java.awt.Color(204, 204, 204));
-                                errorConsole.setColumns(20);
-                                errorConsole.setEditable(false);
-                                errorConsole.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                errorConsole.setRows(5);
-                                jScrollPane5.setViewportView(errorConsole);
-
-                                jPanel2.setMaximumSize(new java.awt.Dimension(392, 34));
-                                jPanel2.setMinimumSize(new java.awt.Dimension(392, 34));
-
-                                emulateButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                emulateButton.setText("Emulate");
-                                emulateButton.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        emulateButtonActionPerformed(evt);
-                                    }
-                                });
-
-                                step.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                step.setText("Step");
-                                step.setMaximumSize(new java.awt.Dimension(79, 23));
-                                step.setMinimumSize(new java.awt.Dimension(79, 23));
-                                step.setPreferredSize(new java.awt.Dimension(79, 23));
-                                step.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        stepActionPerformed(evt);
-                                    }
-                                });
-
-                                reset.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                reset.setText("Reset");
-                                reset.setMaximumSize(new java.awt.Dimension(79, 23));
-                                reset.setMinimumSize(new java.awt.Dimension(79, 23));
-                                reset.setPreferredSize(new java.awt.Dimension(79, 23));
-                                reset.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        resetActionPerformed(evt);
-                                    }
-                                });
-
-                                javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-                                jPanel2.setLayout(jPanel2Layout);
-                                jPanel2Layout.setHorizontalGroup(
-                                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addComponent(emulateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(step, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(reset, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                );
-                                jPanel2Layout.setVerticalGroup(
-                                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(reset, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
-                                            .addComponent(step, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(emulateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                );
-
-                                javax.swing.GroupLayout editorLayout = new javax.swing.GroupLayout(editor);
-                                editor.setLayout(editorLayout);
-                                editorLayout.setHorizontalGroup(
-                                    editorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jsp)
-                                    .addComponent(jScrollPane5)
-                                    .addGroup(editorLayout.createSequentialGroup()
-                                        .addGap(61, 61, 61)
-                                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addContainerGap(65, Short.MAX_VALUE))
-                                );
-                                editorLayout.setVerticalGroup(
-                                    editorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(editorLayout.createSequentialGroup()
-                                        .addComponent(jsp, javax.swing.GroupLayout.PREFERRED_SIZE, 512, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                );
-
-                                memory.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Memory", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
-
-                                jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                                jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-                                jScrollPane2.getHorizontalScrollBar().setModel(jScrollPane3.getHorizontalScrollBar().getModel());
-                                jScrollPane2.getVerticalScrollBar().setModel(jScrollPane3.getVerticalScrollBar().getModel());
-
-                                jTable1.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
-                                jTable1.setForeground(new java.awt.Color(102, 102, 102));
-                                jTable1.setModel(new HexModel(256));
-                                jScrollPane2.setViewportView(jTable1);
-
-                                jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-                                memoryTable.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                memoryTable.setModel(new HexModel());
-                                memoryTable.setSelectionBackground(new java.awt.Color(51, 204, 0));
-                                memoryTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
-                                jScrollPane3.setViewportView(memoryTable);
-
-                                javax.swing.GroupLayout memoryLayout = new javax.swing.GroupLayout(memory);
-                                memory.setLayout(memoryLayout);
-                                memoryLayout.setHorizontalGroup(
-                                    memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(memoryLayout.createSequentialGroup()
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
-                                );
-                                memoryLayout.setVerticalGroup(
-                                    memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(memoryLayout.createSequentialGroup()
-                                        .addGroup(memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jScrollPane2)
-                                            .addComponent(jScrollPane3))
-                                        .addContainerGap())
-                                );
-
-                                jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Program", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
-
-                                hexPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Hex", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-                                hexPane.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                jScrollPane4.setViewportView(hexPane);
-
-                                mnemonicPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mnemonics", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-                                mnemonicPane.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                                jScrollPane1.setViewportView(mnemonicPane);
-
-                                javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-                                jPanel1.setLayout(jPanel1Layout);
-                                jPanel1Layout.setHorizontalGroup(
-                                    jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                );
-                                jPanel1Layout.setVerticalGroup(
-                                    jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jScrollPane4)
-                                            .addComponent(jScrollPane1))
-                                        .addContainerGap())
-                                );
-
-                                menuOne.setText("File");
-
-                                mbFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-                                mbFile.setText("New");
-                                mbFile.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        mbFileActionPerformed(evt);
-                                    }
-                                });
-                                menuOne.add(mbFile);
-                                menuOne.add(mbSep1);
-
-                                mbOpen.setText("Open File...");
-                                mbOpen.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        mbOpenActionPerformed(evt);
-                                    }
-                                });
-                                menuOne.add(mbOpen);
-                                menuOne.add(mbSep2);
-
-                                mbSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-                                mbSave.setText("Save");
-                                mbSave.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        mbSaveActionPerformed(evt);
-                                    }
-                                });
-                                menuOne.add(mbSave);
-
-                                mbSaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-                                mbSaveAs.setText("Save As...");
-                                mbSaveAs.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        mbSaveAsActionPerformed(evt);
-                                    }
-                                });
-                                menuOne.add(mbSaveAs);
-                                menuOne.add(mbSep3);
-
-                                mbExit.setText("Exit");
-                                mbExit.addMouseListener(new java.awt.event.MouseAdapter() {
-                                    public void mouseClicked(java.awt.event.MouseEvent evt) {
-                                        mbExitMouseClicked(evt);
-                                    }
-                                });
-                                mbExit.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        mbExitActionPerformed(evt);
-                                    }
-                                });
-                                menuOne.add(mbExit);
-
-                                menuBar.add(menuOne);
-
-                                menuTwo.setText("OBJ/LIST");
-                                menuTwo.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        menuTwoActionPerformed(evt);
-                                    }
-                                });
-
-                                jMenuItem2.setText("View");
-                                jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        jMenuItem2ActionPerformed(evt);
-                                    }
-                                });
-                                menuTwo.add(jMenuItem2);
-
-                                menuBar.add(menuTwo);
-
-                                menuThree.setText("Help");
-
-                                jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-                                jMenuItem1.setText("Code Reference");
-                                jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        jMenuItem1ActionPerformed(evt);
-                                    }
-                                });
-                                menuThree.add(jMenuItem1);
-
-                                jMenuItem3.setText("About");
-                                jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                        jMenuItem3ActionPerformed(evt);
-                                    }
-                                });
-                                menuThree.add(jMenuItem3);
-
-                                menuBar.add(menuThree);
-
-                                setJMenuBar(menuBar);
-
-                                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-                                getContentPane().setLayout(layout);
-                                layout.setHorizontalGroup(
-                                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(editor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(memory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addContainerGap())
-                                );
-                                layout.setVerticalGroup(
-                                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(memory, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(editor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                );
-
-                                pack();
-                            }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * Setting the exit button action.
-     */
-    private void mbExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbExitActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_mbExitActionPerformed
-
-    private void mbExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mbExitMouseClicked
-    }//GEN-LAST:event_mbExitMouseClicked
-
-    private void programCounterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_programCounterActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_programCounterActionPerformed
-
-    private void accFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accFieldActionPerformed
-    }//GEN-LAST:event_accFieldActionPerformed
-
-    private void indexField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexField3ActionPerformed
-    }//GEN-LAST:event_indexField3ActionPerformed
-
-    /**
-     * Assemble Button action. Checks to see if there is a program to be
-     * assembled, if not, prints error.
-     */
-    private void assembleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assembleButtonActionPerformed
-        if (textarea.getText().length() == 0) {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText("PLEASE LOAD A PROGRAM BEFORE TRYING TO ASSEMBLE");
-        } else {
-            resetMod();
-            assemble();
-        }
-    }//GEN-LAST:event_assembleButtonActionPerformed
-
-    /**
-     * Emulator Button action. If a program has been assembled, start emulating,
-     * otherwise, display error.
-     */
-    private void emulateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emulateButtonActionPerformed
-        if (mc.getAssembleStatus()) {
-
-            if (mc.getStatus()) {
-                errorConsole.setForeground(new Color(0, 119, 64));
-                errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-                return;
-            }
-
-
-            boolean complete = mc.emulate();
-
-            if (mc.terminated()) {
-                errorConsole.setForeground(new Color(0, 119, 64));
-                errorConsole.setText("PROGRAM SUCCESSFULLY TERMINATED");
-                return;
-            }
-            
-            if (complete) {
-                errorConsole.setForeground(new Color(0, 119, 64));
-                errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-            } else {
-                errorConsole.setForeground(new Color(186, 31, 57));
-                errorConsole.setText(EmulatorControl.returnErrors());
-            }
-        } else {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
-        }
-    }//GEN-LAST:event_emulateButtonActionPerformed
-
-    /**
-     * Open File option.
-     */
-    private void mbOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbOpenActionPerformed
-        fileChooser.setDialogTitle("Open");
-        int returnVal = fileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try {
-                // What to do with the file
-                textarea.read(new FileReader(file.getAbsolutePath()), null);
-            } catch (IOException ex) {
-            }
-        } else {
-        }
-        errorConsole.setText("");
-    }//GEN-LAST:event_mbOpenActionPerformed
-
-    /**
-     * Save file; calls the saveProcess method.
-     */
-    private void mbSaveAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveAsActionPerformed
-    {//GEN-HEADEREND:event_mbSaveAsActionPerformed
-        saveProcess();
-    }//GEN-LAST:event_mbSaveAsActionPerformed
-
-    /**
-     * Step Emulation button. Checks to see if there is an assembled program, if
-     * there is, perform the first instruction, if not, show an error.
-     */
-    private void stepActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_stepActionPerformed
-    {//GEN-HEADEREND:event_stepActionPerformed
-        if (mc.getAssembleStatus()) {
-            mc.emulateStep();
-            errorConsole.setForeground(new Color(0, 119, 64));
-            errorConsole.setText("STEP EMULATION - STEP COMPLETE");
-            
-            String errors = EmulatorControl.returnErrors();
-            
-            if (errors.length() != 0) {
-                errorConsole.setForeground(new Color(186, 31, 57));
-                errorConsole.setText(errors);
-            }
-
-            if (mc.getStatus()) {
-                errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-                return;
-            }
-        } else {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
-        }
-    }//GEN-LAST:event_stepActionPerformed
-
-    /**
-     * Calls the reset method/resetMod method.
-     */
-    private void resetActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetActionPerformed
-    {//GEN-HEADEREND:event_resetActionPerformed
-        if (mc.getAssembleStatus() && !textarea.getText().equals("")) {
-            reset();
-        } else {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
-
-            resetMod();
-        }
-    }//GEN-LAST:event_resetActionPerformed
-
-    /*
-     * New File option, checks to see if the program needs saving and prompts
-     * the user. Once saved, it resets the whole program.
-     */
-    private void mbFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbFileActionPerformed
-    {//GEN-HEADEREND:event_mbFileActionPerformed
-        if (needsSaving) {
-            new JOptionPane();
-            int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
-
-            if (value == 0) {
-                saveProcess();
-            } else if (value == 1) {
-                resetMod();
-                errorConsole.setText("");
-                needsSaving = false;
-                textarea.setText("");
-            } else {
-                return;
-            }
-        } else {
-            resetMod();
-            errorConsole.setText("");
-            needsSaving = false;
-            textarea.setText("");
-        }
-    }//GEN-LAST:event_mbFileActionPerformed
-
-    /**
-     * Listens for key presses to notify the needsSaving variable.
-     */
-    private void textareaKeyTyped(java.awt.event.KeyEvent evt)//GEN-FIRST:event_textareaKeyTyped
-    {//GEN-HEADEREND:event_textareaKeyTyped
-        needsSaving = true;
-    }//GEN-LAST:event_textareaKeyTyped
-
-    /**
-     * Save Action, saves to the currently selected file.
-     */
-    private void mbSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveActionPerformed
-    {//GEN-HEADEREND:event_mbSaveActionPerformed
-        needsSaving = false;
-        File file = fileChooser.getSelectedFile();
-        try {
-            String s = textarea.getText();
-            FileWriter fw = new FileWriter(file);
-            fw.write(s);
-            fw.close();
-        } catch (Exception e) {
-        }
-        needsSaving = false;
-    }//GEN-LAST:event_mbSaveActionPerformed
-
-    /**
-     * Creates an instance of the Ref class and displays it.
-     */
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem1ActionPerformed
-    {//GEN-HEADEREND:event_jMenuItem1ActionPerformed
-        Ref re = new Ref();
-        re.createAndShowGUI();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void menuTwoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_menuTwoActionPerformed
-    {//GEN-HEADEREND:event_menuTwoActionPerformed
-    }//GEN-LAST:event_menuTwoActionPerformed
-
-    /**
-     * Creates the OBJ/LST text format and sends it to an instance of the OBJLST
-     * class and displays it.
-     */
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
-    {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
-        if (!mc.getAssembleStatus()) {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText("NO PROGRAM FOUND");
-        } else {
-            LinkedList<String[]> list = createOBJLST(mc.getOriginal(), mc.getHexCodes());
-
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = 0; j < list.get(i).length; j++) {
-                    sb.append(list.get(i)[j] + "\t");
-                }
-                sb.append("\n");
-            }
-
-            new OBJLST(sb.toString(), fileChooser);
-        }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void accFieldInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_accFieldInputMethodTextChanged
-    {//GEN-HEADEREND:event_accFieldInputMethodTextChanged
-    }//GEN-LAST:event_accFieldInputMethodTextChanged
-
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextField4ActionPerformed
-    {//GEN-HEADEREND:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
-
-    private void OveBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_OveBitActionPerformed
-    {//GEN-HEADEREND:event_OveBitActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OveBitActionPerformed
-
-    private void negBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_negBitActionPerformed
-    {//GEN-HEADEREND:event_negBitActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_negBitActionPerformed
-
-    private void zerBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_zerBitActionPerformed
-    {//GEN-HEADEREND:event_zerBitActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_zerBitActionPerformed
-
-    private void carBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_carBitActionPerformed
-    {//GEN-HEADEREND:event_carBitActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_carBitActionPerformed
-
-    /**
-     * Switches the program to base 10 mode.
-     */
-    private void decimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_decimalActionPerformed
-    {//GEN-HEADEREND:event_decimalActionPerformed
-        baseMode = true;
-        setDec();
-
-        errorConsole.setForeground(new Color(0, 119, 64));
-        errorConsole.setText("DISPLAYING VALUES IN DECIMAL (BASE 10)");
-    }//GEN-LAST:event_decimalActionPerformed
-
-    /**
-     * Switches the program to base 16 mode.
-     */
-    private void hexadecimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_hexadecimalActionPerformed
-    {//GEN-HEADEREND:event_hexadecimalActionPerformed
-        baseMode = false;
-        setHex();
-
-        errorConsole.setForeground(new Color(0, 119, 64));
-        errorConsole.setText("DISPLAYING VALUES IN HEXADECIMAL (BASE 16)");
-    }//GEN-LAST:event_hexadecimalActionPerformed
-
-    /**
-     * Creates an instance of the About class and displays it.
-     */
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem3ActionPerformed
-    {//GEN-HEADEREND:event_jMenuItem3ActionPerformed
-        new About();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    /**
-     * Returns the table with the index values. Used only when the memory needs
-     * to be extended.
-     */
-    public JTable getTable()
-    {
-        return jTable1;
-    }
-
-    /**
-     * Returns the text from the textarea.
-     */
-    public JTextArea getTextArea()
-    {
-        return textarea;
-    }
-
-    /**
-     * Changes all the values in the program to Hexadecimal (Default).
-     */
-    public void setHex()
-    {
-        baseMode = false;
-        accField.setText(format(Integer.toHexString(Integer.parseInt(accField.getText()))));
-        programCounter.setText(format(Integer.toHexString(Integer.parseInt(programCounter.getText()))));
-
-        indexField1.setText(format(Integer.toHexString(Integer.parseInt(indexField1.getText()))));
-        indexField2.setText(format(Integer.toHexString(Integer.parseInt(indexField2.getText()))));
-        indexField3.setText(format(Integer.toHexString(Integer.parseInt(indexField3.getText()))));
-
-        inputField.setText(format(Integer.toHexString(Integer.parseInt(inputField.getText()))));
-        outputField.setText(format(Integer.toHexString(Integer.parseInt(outputField.getText()))));
-    }
-
-    /**
-     * Changes all the values in the program to decimal.
-     */
-    public void setDec()
-    {
-        baseMode = true;
-        accField.setText(format(Integer.parseInt(accField.getText(), 16) + ""));
-        programCounter.setText(format(Integer.parseInt(programCounter.getText(), 16) + ""));
-        indexField1.setText(format(Integer.parseInt(indexField1.getText(), 16) + ""));
-        indexField2.setText(format(Integer.parseInt(indexField2.getText(), 16) + ""));
-        indexField3.setText(format(Integer.parseInt(indexField3.getText(), 16) + ""));
-
-        inputField.setText(format(Integer.parseInt(inputField.getText(), 16) + ""));
-        outputField.setText(format(Integer.parseInt(outputField.getText(), 16) + ""));
-    }
-
-    /**
-     * Formats text to be 4 characters long if it is not already.
-     */
-    public String format(String f)
-    {
-        f = f.toUpperCase();
-
-        if (f.length() == 1) {
-            return "000" + f;
-        } else if (f.length() == 2) {
-            return "00" + f;
-        } else if (f.length() == 3) {
-            return "0" + f;
-        } else {
-            return f;
-        }
-    }
-
-    /**
-     * Returns the current base mode of the program.
-     */
-    public static boolean getBaseMode()
-    {
-        // true = base 10; false = base 16;
-        return baseMode;
-    }
-
-    /**
-     * Resets the 3 registers to their default values.
-     */
-    public void resetRegisters()
-    {
-        negBit.setText("0");
-        carBit.setText("0");
-        zerBit.setText("1");
-    }
-
-    /**
-     * Setters for status register bits.
-     */
-    public static void setNegBit(boolean a)
-    {
-        if (a) {
-            negBit.setText("1");
-        } else {
-            negBit.setText("0");
-        }
-    }
-    
-    public static boolean getNegBit()
-    {
-        if (negBit.getText().equals("1"))
-            return true;
-        else
-            return false;
-    
-    }
-
-    public static void setCarBit(boolean a)
-    {
-        if (a) {
-            carBit.setText("1");
-        } else {
-            carBit.setText("0");
-        }
-    }
-
-    public static void setZerBit(boolean a)
-    {
-        if (a) {
-            zerBit.setText("1");
-        } else {
-            zerBit.setText("0");
-        }
-    }
-
-    /**
-     * Method used to check if a valid input has been entered into one of the
-     * text fields.
-     */
-    private boolean correctChar(char a)
-    {
-        if (a >= '0' && a <= '9') {
-            return true;
-        }
-
-        if (a == 'A') {
-            return true;
-        } else if (a == 'B') {
-            return true;
-        } else if (a == 'C') {
-            return true;
-        } else if (a == 'D') {
-            return true;
-        } else if (a == 'E') {
-            return true;
-        } else if (a == 'F') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Method used to check if a valid input has been entered into one of the
-     * text fields.
-     */
-    private boolean runInputCheck(String s)
-    {
-        if (!baseMode) {
-            s = s.toUpperCase();
-
-            if (s.length() > 4) {
-                return false;
-            } else {
-                for (int i = 0; i < s.length(); i++) {
-                    if (!correctChar(s.charAt(i))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        } else {
-            if (s.length() > 5) {
-                return false;
-            } else {
-                for (int i = 0; i < s.length(); i++) {
-                    if (!(s.charAt(i) >= '0' && s.charAt(i) <= '9')) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-    }
-
-    /**
-     * $$Redundant method$$ Exactly the same as format method.
-     */
-    private String formatNum(String num)
-    {
-        if (num.length() == 1) {
-            num = "000" + num;
-        } else if (num.length() == 2) {
-            num = "00" + num;
-        } else if (num.length() == 3) {
-            num = "0" + num;
-        }
-
-        return num.toUpperCase();
-    }
-
-    /**
-     * Method that creates the OBJLST text.
-     */
-    public LinkedList<String[]> createOBJLST(String pText, String[] hexCodes)
-    {
-        String[] text = pText.split("\n");
-        int begin = 0;
-        boolean beginAssigned = false;
-        
-        for (int i = 0; i < text.length; i++) {
-            String org = text[i].trim().toUpperCase();
-            if (org.startsWith("ORG")) {
-                if (!beginAssigned) {
-                    begin = i++;
-                    beginAssigned = true;
-                }
-            }
-        }
-
-        LinkedList<String[]> obj = new LinkedList<String[]>();
-
-        for (int i = 0, j = 0; i < text.length; i++) {
-
-            String[] line = new String[4];
-
-            // If it is the last line, do this and break.
-            if (i == text.length - 1) {
-                line[0] = formatNum(Integer.toHexString(i));
-                line[1] = "";
-                line[2] = "";
-                line[3] = text[i];
-                obj.add(line);
-                break;
-            }
-
-            line[0] = formatNum(Integer.toHexString(i));
-            
-            if (!(text[i].startsWith("*") || text[i].equals("\\s+"))) {
-                if (j != 0) {
-                    line[1] = formatNum(Integer.toHexString(j));
-                } else {
-                    line[1] = "";
-                }
-
-
-                if (!hexCodes[j].startsWith("ORG")) {
-                    line[2] = hexCodes[j];
-                } else {
-                    line[2] = "";
-                }
-
-            } else {
-                line[1] = "\t";
-                line[2] = "\t";
-            }
-            
-            line[3] = text[i];
-            
-            obj.add(line);
-
-            if (i >= begin) {
-                j++;
-            }
-        }
-        return obj;
-    }
-
-    /**
-     * Pulls up a save dialog and asks the user to save.
-     */
-    private void saveProcess()
-    {
-        fileChooser.setDialogTitle("Save As...");
-        int returnVal = fileChooser.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = null;
-
-            try {
-                String a = fileChooser.getSelectedFile().getPath();
-                a = a.substring(0, a.indexOf("."));
-                file = new File(a + ".ASM");
-            } catch (Exception exc) {
-                file = new File(fileChooser.getSelectedFile() + ".ASM");
-            }
-
-            if (file == null) {
-                file = new File(fileChooser.getSelectedFile() + ".ASM");
-            }
-
-            try {
-                String s = textarea.getText();
-                FileWriter fw = new FileWriter(file);
-                fw.write(s);
-                fw.close();
-            } catch (Exception e) {
-            }
-
-        }
-    }
-
-    /**
-     * Resets the tables in the program to their default sizes of 256 cells.
-     */
-    public void resetTables()
-    {
-        HexModel hm = new HexModel(256);
-        HexModel hm2 = new HexModel(true, 256);
-
-        getTable().setModel(hm);
-        getTable().validate();
-        getTable().repaint();
-
-        getMemoryTable().setModel(hm2);
-        getMemoryTable().validate();
-        getMemoryTable().repaint();
-    }
-
-    /**
-     * A modified version of the reset method that does not assemble the program
-     * again. Resets all values to their defaults.
-     */
-    public void resetMod()
-    {
-        resetTables();
-
-        accField.setText("0000");
-        programCounter.setText("0000");
-        indexField1.setText("0000");
-        indexField2.setText("0000");
-        indexField3.setText("0000");
-        inputField.setText("0000");
-        outputField.setText("0000");
-        String[] empty = new String[]{""};
-        mnemonicPane.setListData(empty);
-        hexPane.setListData(empty);
-        memoryTable.clearSelection();
-        resetRegisters();
-
-        if (baseMode) {
-            setDec();
-        }
-
-        errorConsole.setForeground(new Color(0, 119, 64));
-        errorConsole.setText("PROGRAM SUCCESSFULLY RESET");
-    }
-
-    /**
-     * Resets all values to their defaults and reassembles.
-     */
-    public void reset()
-    {
-        for (int i = 0; i < memoryTable.getRowCount(); i++) {
-            memoryTable.setValueAt("", i, 0);
-        }
-        accField.setText("0000");
-        programCounter.setText("0000");
-        indexField1.setText("0000");
-        indexField2.setText("0000");
-        indexField3.setText("0000");
-        inputField.setText("0000");
-        outputField.setText("0000");
-        String[] empty = new String[]{""};
-        mnemonicPane.setListData(empty);
-        hexPane.setListData(empty);
-        memoryTable.clearSelection();
-        resetRegisters();
-        assemble();
-
-        if (baseMode) {
-            setDec();
-        }
-
-        errorConsole.setForeground(new Color(0, 119, 64));
-        errorConsole.setText("PROGRAM SUCCESSFULLY RESET");
-    }
-
-    /**
-     * Assemble method, sends the command to the main control to assemble, if
-     * successful, it updates all the tables and lists. Else it displays any
-     * errors that occurred with the assembly process.
-     */
-    public void assemble()
-    {
-        String error = mc.assemble(textarea.getText());
-
-        if (mc.getProgram().getHasErrors() == true) {
-            errorConsole.setForeground(new Color(186, 31, 57));
-            errorConsole.setText(error);
-        } else {
-            try {
-                errorConsole.setForeground(new Color(0, 119, 64));
-                errorConsole.setText("PROGRAM SUCCESSFULLY ASSEMBLED");
-                mnemonicPane.setListData(mc.updateMnemonicPane());
-                hexPane.setListData(mc.updateHexPane());
-                memoryTable = mc.updateMemoryTable(memoryTable);
-            } catch (Exception e) {
-                resetMod();
-                errorConsole.setForeground(new Color(186, 31, 57));
-                errorConsole.setText("UNEXPECTED ERROR OCCURED DURING ASSEMBLY\nPLEASE CHECK YOUR PROGRAM CAREFULLY");
-            }
-        }
-    }
-
-    /**
-     * Sets the value of the program counter.
-     */
-    public void setProgramCounter(String value)
-    {
-        programCounter.setText(value);
-    }
-
-    /**
-     * Returns the table containing all the program memory.
-     */
-    public static JTable getMemoryTable()
-    {
-        return memoryTable;
-    }
-
-    /**
-     * Returns the list containing all the Hex codes.
-     */
-    public static JList getHexPane()
-    {
-        return hexPane;
-    }
-
-    /**
-     * Returns the list containing all the mnemonic commands.
-     */
-    public static JList getMnemonicPane()
-    {
-        return mnemonicPane;
-    }
-
-    /**
-     * Returns the value of the index desired.
-     */
-    public static String getIndexValue(String register)
-    {
-        if (register.equalsIgnoreCase("1")) {
-            return getIndex1();
-        } else if (register.equalsIgnoreCase("2")) {
-            return getIndex2();
-        } else {
-            return getIndex3();
-        }
-    }
-
-    /**
-     * Returns the value of the ACC field.
-     */
-    public static String getAccField()
-    {
-        return accField.getText();
-    }
-
-    /**
-     * Sets the value of the ACC to the parameter.
-     */
-    public static void setAccumulator(String num)
-    {
-        accField.setText(num);
-    }
-
-    /**
-     * Getter and Setter methods for all 3 indices.
-     */
-    public static String getIndex1()
-    {
-        return indexField1.getText();
-    }
-
-    public static String getIndex2()
-    {
-        return indexField2.getText();
-    }
-
-    public static String getIndex3()
-    {
-        return indexField3.getText();
-    }
-
-    public static void setIndex1(String i)
-    {
-        indexField1.setText(i);
-    }
-
-    public static void setIndex2(String i)
-    {
-        indexField2.setText(i);
-    }
-
-    public static void setIndex3(String i)
-    {
-        indexField3.setText(i);
-    }
-
-    /**
-     * Getter and Setter methods for the input and output fields.
-     */
-    public static void setInputField(String input)
-    {
-        inputField.setText(input.toUpperCase());
-    }
-
-    public static String getInputField()
-    {
-        return inputField.getText();
-    }
-
-    public static void setOutputField(String output)
-    {
-        outputField.setText(output.toUpperCase());
-    }
-
-    public static String getOutputField()
-    {
-        return outputField.getText();
-    }
-
-    /**
-     * Methods that asks the user for an input
-     */
-    public static String newValue()
-    {
-        JOptionPane jp = new JOptionPane("Input");
-        String value = jp.showInputDialog(null, "Enter value (Type #D (Decimal), #B (Binary), #O (Octal), followed by a value.\n\tDefault base is Hex.");
-
-        // If the user does not enter anything, returns "ERROR". 
-        if (value == null) {
-            return "NULL";
-        } else if (value.length() == 0) {
-            return "ERROR";
-        }
-
-        try {
-            if (value.indexOf("#") == -1) {
-                 value = neg(16, value);
-            } else {
-                if (value.substring(1, 2).equalsIgnoreCase("B")) {
-                    value = neg(2, value.substring(2));
-                } else if (value.substring(1, 2).equalsIgnoreCase("D")) { 
-                    value = neg(10, value.substring(2));
-                } else if (value.substring(1, 2).equalsIgnoreCase("O")) {
-                    value = neg(8, value.substring(2));
-                } else {
-                    throw new NumberFormatException();
-                }
-            }
-        } catch (NumberFormatException nfe) {
-        }
-        return value;
-    }
-
-    private static String neg(int base, String value)
-    {
-        if (value.contains("-")) {
-            setNegBit(true);
-            value = Integer.toHexString(Integer.parseInt(value, base)).toUpperCase();
-            String newValue = "";
-            for (int i = 0; i < 4; i++) {
-                newValue += value.charAt(i+4);
-            }
-            return newValue;
-        } else {
-            return Integer.toHexString(Integer.parseInt(value, base));
-        }
-    }
-
-    public String[] getProgram()
-    {
-        return mc.getProgramText();
-    }
-
-    public SymbolTable getST()
-    {
-        return mc.getProgram().getSymbolTable();
-    }
-    private boolean needsSaving;
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private static javax.swing.JTextField OveBit;
-    private static javax.swing.JTextField accField;
-    private javax.swing.JButton assembleButton;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private static javax.swing.JTextField carBit;
-    private javax.swing.JRadioButton decimal;
-    private javax.swing.JPanel editor;
-    private javax.swing.JButton emulateButton;
-    private javax.swing.JTextArea errorConsole;
-    private javax.swing.JFileChooser fileChooser;
-    private static javax.swing.JList hexPane;
-    private javax.swing.JRadioButton hexadecimal;
-    private static javax.swing.JTextField indexField1;
-    private static javax.swing.JTextField indexField2;
-    private static javax.swing.JTextField indexField3;
-    private static javax.swing.JTextField inputField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JScrollPane jsp;
-    private javax.swing.JTextArea lines;
-    private javax.swing.JMenuItem mbExit;
-    private javax.swing.JMenuItem mbFile;
-    private javax.swing.JMenuItem mbOpen;
-    private javax.swing.JMenuItem mbSave;
-    private javax.swing.JMenuItem mbSaveAs;
-    private javax.swing.JPopupMenu.Separator mbSep1;
-    private javax.swing.JPopupMenu.Separator mbSep2;
-    private javax.swing.JPopupMenu.Separator mbSep3;
-    private javax.swing.JPanel memory;
-    private static javax.swing.JTable memoryTable;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenu menuOne;
-    private javax.swing.JMenu menuThree;
-    private javax.swing.JMenu menuTwo;
-    private static javax.swing.JList mnemonicPane;
-    private static javax.swing.JTextField negBit;
-    private static javax.swing.JTextField outputField;
-    private javax.swing.JTextField programCounter;
-    private javax.swing.JPanel register;
-    private javax.swing.JButton reset;
-    private javax.swing.JButton step;
-    private javax.swing.JTextArea textarea;
-    private static javax.swing.JTextField zerBit;
-    // End of variables declaration//GEN-END:variables
+public class ASCView extends javax.swing.JFrame {
+
+	/**
+	 * Self-made instance variables
+	 */
+	private MainControl mc;
+	// false - base 16, true - base 10
+	private static boolean baseMode = false;
+	UndoableTextArea m_undoableTextArea = new UndoableTextArea();
+
+	/**
+	 * Creates new form ASCView
+	 */
+	public ASCView(MainControl mc) {
+		this.mc = mc;
+
+		try {
+			// Set cross-platform Java L&F (also called "Metal")
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (Exception e) {
+		}
+
+		needsSaving = false;
+		initComponents();
+	}
+
+	@SuppressWarnings("unchecked")
+	// <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
+
+		fileChooser = new javax.swing.JFileChooser();
+		lines = new javax.swing.JTextArea("1");
+		buttonGroup1 = new javax.swing.ButtonGroup();
+		register = new javax.swing.JPanel();
+		accField = new javax.swing.JTextField();
+		programCounter = new javax.swing.JTextField();
+		indexField1 = new javax.swing.JTextField();
+		indexField2 = new javax.swing.JTextField();
+		indexField3 = new javax.swing.JTextField();
+		jLabel1 = new javax.swing.JLabel();
+		jLabel2 = new javax.swing.JLabel();
+		jLabel3 = new javax.swing.JLabel();
+		jLabel4 = new javax.swing.JLabel();
+		jLabel5 = new javax.swing.JLabel();
+		inputField = new javax.swing.JTextField();
+		outputField = new javax.swing.JTextField();
+		jLabel6 = new javax.swing.JLabel();
+		jLabel7 = new javax.swing.JLabel();
+		assembleButton = new javax.swing.JButton();
+		jSeparator3 = new javax.swing.JSeparator();
+		jSeparator4 = new javax.swing.JSeparator();
+		jPanel3 = new javax.swing.JPanel();
+		jTextField4 = new javax.swing.JTextField();
+		OveBit = new javax.swing.JTextField();
+		negBit = new javax.swing.JTextField();
+		zerBit = new javax.swing.JTextField();
+		carBit = new javax.swing.JTextField();
+		jLabel8 = new javax.swing.JLabel();
+		jLabel10 = new javax.swing.JLabel();
+		jLabel11 = new javax.swing.JLabel();
+		jLabel12 = new javax.swing.JLabel();
+		jLabel13 = new javax.swing.JLabel();
+		decimal = new javax.swing.JRadioButton();
+		hexadecimal = new javax.swing.JRadioButton();
+		editor = new javax.swing.JPanel();
+		jsp = new javax.swing.JScrollPane(m_undoableTextArea);
+		textarea = new UndoableTextArea();
+		jScrollPane5 = new javax.swing.JScrollPane();
+		errorConsole = new javax.swing.JTextArea();
+		jPanel2 = new javax.swing.JPanel();
+		emulateButton = new javax.swing.JButton();
+		step = new javax.swing.JButton();
+		reset = new javax.swing.JButton();
+		memory = new javax.swing.JPanel();
+		jScrollPane2 = new javax.swing.JScrollPane();
+		jTable1 = new javax.swing.JTable();
+		jScrollPane3 = new javax.swing.JScrollPane();
+		memoryTable = new javax.swing.JTable();
+		jPanel1 = new javax.swing.JPanel();
+		jScrollPane4 = new javax.swing.JScrollPane();
+		hexPane = new javax.swing.JList();
+		jScrollPane1 = new javax.swing.JScrollPane();
+		mnemonicPane = new javax.swing.JList();
+		menuBar = new javax.swing.JMenuBar();
+		menuOne = new javax.swing.JMenu();
+		mbFile = new javax.swing.JMenuItem();
+		mbSep1 = new javax.swing.JPopupMenu.Separator();
+		mbOpen = new javax.swing.JMenuItem();
+		mbSep2 = new javax.swing.JPopupMenu.Separator();
+		mbSave = new javax.swing.JMenuItem();
+		mbSaveAs = new javax.swing.JMenuItem();
+		mbSep3 = new javax.swing.JPopupMenu.Separator();
+		mbExit = new javax.swing.JMenuItem();
+		menuEdit = new javax.swing.JMenu();
+		eMenuCopy = new javax.swing.JMenuItem();
+		eMenuPaste = new javax.swing.JMenuItem();
+		eMenuUndo = new javax.swing.JMenuItem();
+		eMenuRedo = new javax.swing.JMenuItem();
+		editSep1 = new javax.swing.JPopupMenu.Separator();
+		editSep2 = new javax.swing.JPopupMenu.Separator();
+		editSep3 = new javax.swing.JPopupMenu.Separator();
+		menuTwo = new javax.swing.JMenu();
+		jMenuItem2 = new javax.swing.JMenuItem();
+		menuThree = new javax.swing.JMenu();
+		jMenuItem1 = new javax.swing.JMenuItem();
+		jMenuItem3 = new javax.swing.JMenuItem();
+
+		fileChooser.setAccessory(mbOpen);
+		fileChooser.setDialogTitle("Open File...");
+		fileChooser.setFileFilter(new GUI.FileFilter());
+
+		lines.setEditable(false);
+		lines.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+		lines.setForeground(new java.awt.Color(0, 102, 102));
+		lines.setRows(5);
+		lines.setBackground(Color.LIGHT_GRAY);
+		jsp.setRowHeaderView(lines);
+
+		buttonGroup1.add(decimal);
+		buttonGroup1.add(hexadecimal);
+
+
+		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		setTitle("ASC Assembler & Emulator");
+		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		setMaximumSize(new java.awt.Dimension(1134, 768));
+		setMinimumSize(new java.awt.Dimension(1134, 768));
+		setPreferredSize(new java.awt.Dimension(1133, 768));
+		setResizable(false);
+
+		register.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Registers", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+		accField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		accField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		accField.setText("0000");
+		accField.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				accFieldActionPerformed(evt);
+			}
+		});
+		accField.addInputMethodListener(new java.awt.event.InputMethodListener() {
+			public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+			}
+
+			public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+				accFieldInputMethodTextChanged(evt);
+			}
+		});
+
+		programCounter.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		programCounter.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		programCounter.setText("0000");
+		programCounter.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				programCounterActionPerformed(evt);
+			}
+		});
+
+		indexField1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		indexField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		indexField1.setText("0000");
+
+		indexField2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		indexField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		indexField2.setText("0000");
+
+		indexField3.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		indexField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		indexField3.setText("0000");
+		indexField3.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				indexField3ActionPerformed(evt);
+			}
+		});
+
+		jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel1.setText("ACC:");
+		jLabel1.setToolTipText("Accumulator");
+
+		jLabel2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel2.setText("PC:");
+		jLabel2.setToolTipText("Program Counter");
+
+		jLabel3.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel3.setText("Index 1:");
+
+		jLabel4.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel4.setText("Index 2:");
+
+		jLabel5.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel5.setText("Index 3:");
+
+		inputField.setEditable(false);
+		inputField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		inputField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		inputField.setText("0000");
+
+		outputField.setEditable(false);
+		outputField.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		outputField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		outputField.setText("0000");
+
+		jLabel6.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+		jLabel6.setText("Input:");
+
+		jLabel7.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+		jLabel7.setText("Output:");
+
+		assembleButton.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+		assembleButton.setText("Assemble");
+		assembleButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				assembleButtonActionPerformed(evt);
+			}
+		});
+
+		jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		jPanel3.setPreferredSize(new java.awt.Dimension(140, 43));
+
+		jTextField4.setEditable(false);
+		jTextField4.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jTextField4.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		jTextField4.setText("0");
+		jTextField4.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jTextField4ActionPerformed(evt);
+			}
+		});
+
+		OveBit.setEditable(false);
+		OveBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		OveBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		OveBit.setText("0");
+		OveBit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				OveBitActionPerformed(evt);
+			}
+		});
+
+		negBit.setEditable(false);
+		negBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		negBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		negBit.setText("0");
+		negBit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				negBitActionPerformed(evt);
+			}
+		});
+
+		zerBit.setEditable(false);
+		zerBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		zerBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		zerBit.setText("1");
+		zerBit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				zerBitActionPerformed(evt);
+			}
+		});
+
+		carBit.setEditable(false);
+		carBit.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		carBit.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		carBit.setText("0");
+		carBit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				carBitActionPerformed(evt);
+			}
+		});
+
+		jLabel8.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		jLabel8.setText("C");
+		jLabel8.setToolTipText("Carry bit");
+
+		jLabel10.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		jLabel10.setText("N");
+		jLabel10.setToolTipText("Negative bit");
+
+		jLabel11.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		jLabel11.setText("Z");
+		jLabel11.setToolTipText("Zero bit");
+
+		jLabel12.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		jLabel12.setText("V");
+		jLabel12.setToolTipText("Overflow bit (NOT USED IN ASC)");
+
+		jLabel13.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		jLabel13.setText("I");
+		jLabel13.setToolTipText("Interrupt bit (NOT USED IN ASC)");
+
+		javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+		jPanel3.setLayout(jPanel3Layout);
+		jPanel3Layout.setHorizontalGroup(
+			jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel3Layout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel3Layout.createSequentialGroup()
+			.addComponent(carBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(negBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(zerBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(OveBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+			.addGroup(jPanel3Layout.createSequentialGroup()
+			.addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)))
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		jPanel3Layout.setVerticalGroup(
+			jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel3Layout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(jLabel8)
+			.addComponent(jLabel10)
+			.addComponent(jLabel11)
+			.addComponent(jLabel12)
+			.addComponent(jLabel13))
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(negBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(carBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+			.addComponent(zerBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(OveBit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
+		decimal.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		decimal.setText("Decimal");
+		decimal.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				decimalActionPerformed(evt);
+			}
+		});
+
+		hexadecimal.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		hexadecimal.setSelected(true);
+		hexadecimal.setText("Hexadecimal");
+		hexadecimal.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				hexadecimalActionPerformed(evt);
+			}
+		});
+
+		javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
+		register.setLayout(registerLayout);
+		registerLayout.setHorizontalGroup(
+			registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addGap(22, 22, 22))
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+			.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+			.addComponent(accField, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+			.addComponent(programCounter))
+			.addContainerGap())))
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addGap(0, 0, Short.MAX_VALUE)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+			.addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+			.addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+			.addComponent(indexField1)
+			.addComponent(indexField2)
+			.addComponent(indexField3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+			.addComponent(jSeparator4)
+			.addComponent(jSeparator3)
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGap(28, 28, 28)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+			.addComponent(outputField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(inputField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGap(22, 22, 22)
+			.addComponent(jLabel6))
+			.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerLayout.createSequentialGroup()
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel7)
+			.addGap(11, 11, 11)))
+			.addGap(0, 0, Short.MAX_VALUE))))
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGap(31, 31, 31)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(hexadecimal)
+			.addComponent(decimal))
+			.addGap(0, 0, Short.MAX_VALUE)))
+			.addContainerGap())
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGap(21, 21, 21)
+			.addComponent(assembleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addGap(0, 0, Short.MAX_VALUE)));
+		registerLayout.setVerticalGroup(
+			registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(registerLayout.createSequentialGroup()
+			.addGap(7, 7, 7)
+			.addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addGap(26, 26, 26)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(programCounter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel2))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(accField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel1))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(indexField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel3))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(indexField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel4))
+			.addGap(18, 18, 18)
+			.addGroup(registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			.addComponent(indexField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addComponent(jLabel5))
+			.addGap(18, 18, 18)
+			.addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+			.addComponent(jLabel6)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(inputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+			.addComponent(jLabel7)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(outputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addGap(27, 27, 27)
+			.addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addGap(18, 18, 18)
+			.addComponent(decimal)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+			.addComponent(hexadecimal)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+			.addComponent(assembleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)));
+
+		accField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String acc = accField.getText().toUpperCase();
+				try {
+					int num = Integer.parseInt(acc);
+
+					if (num != 0) {
+						setZerBit(false);
+					} else {
+						setZerBit(true);
+					}
+				} catch (Exception e) {
+				}
+				if (!runInputCheck(acc)) {
+					accField.setBackground(Color.red);
+
+					if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
+						errorConsole.setForeground(new Color(186, 31, 57));
+						errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
+					}
+
+				} else {
+					accField.setBackground(Color.white);
+					errorConsole.setText("");
+				}
+
+			}
+		});
+		programCounter.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String acc = programCounter.getText().toUpperCase();
+
+				if (!runInputCheck(acc)) {
+					programCounter.setBackground(Color.red);
+
+					if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
+						errorConsole.setForeground(new Color(186, 31, 57));
+						errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
+					}
+
+				} else {
+					programCounter.setBackground(Color.white);
+					errorConsole.setText("");
+				}
+
+			}
+		});
+		indexField1.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String acc = indexField1.getText().toUpperCase();
+
+				if (!runInputCheck(acc)) {
+					indexField1.setBackground(Color.red);
+
+					if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
+						errorConsole.setForeground(new Color(186, 31, 57));
+						errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
+					}
+
+				} else {
+					indexField1.setBackground(Color.white);
+					errorConsole.setText("");
+				}
+
+			}
+		});
+		indexField2.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String acc = indexField2.getText().toUpperCase();
+
+				if (!runInputCheck(acc)) {
+					indexField2.setBackground(Color.red);
+
+					if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
+						errorConsole.setForeground(new Color(186, 31, 57));
+						errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
+					}
+
+				} else {
+					indexField2.setBackground(Color.white);
+					errorConsole.setText("");
+				}
+
+			}
+		});
+		indexField3.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				String acc = indexField3.getText().toUpperCase();
+
+				if (!runInputCheck(acc)) {
+					indexField3.setBackground(Color.red);
+
+					if (!errorConsole.getText().equals("INPUT ERROR >> INVALID INPUT FORMAT")) {
+						errorConsole.setForeground(new Color(186, 31, 57));
+						errorConsole.setText("INPUT ERROR >> INVALID INPUT FORMAT");
+					}
+
+				} else {
+					indexField3.setBackground(Color.white);
+					errorConsole.setText("");
+				}
+
+			}
+		});
+
+		editor.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Editor", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+		jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+		textarea.setColumns(20);
+		textarea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+		textarea.setRows(5);
+		textarea.addKeyListener(new java.awt.event.KeyAdapter() {
+			public void keyTyped(java.awt.event.KeyEvent evt) {
+				textareaKeyTyped(evt);
+			}
+		});
+		textarea.getDocument().addDocumentListener(new DocumentListener() {
+			public String getText() {
+				int caretPosition = textarea.getDocument().getLength();
+				Element root = textarea.getDocument().getDefaultRootElement();
+				String text = "1" + System.getProperty("line.separator");
+				for (int i = 2; i < root.getElementIndex(caretPosition) + 2; i++) {
+					text += i + System.getProperty("line.separator");
+				}
+				return text;
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+		});
+		jsp.setViewportView(textarea);
+
+		jScrollPane5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+		errorConsole.setBackground(new java.awt.Color(204, 204, 204));
+		errorConsole.setColumns(20);
+		errorConsole.setEditable(false);
+		errorConsole.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		errorConsole.setRows(5);
+		jScrollPane5.setViewportView(errorConsole);
+
+		jPanel2.setMaximumSize(new java.awt.Dimension(392, 34));
+		jPanel2.setMinimumSize(new java.awt.Dimension(392, 34));
+
+		emulateButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		emulateButton.setText("Emulate");
+		emulateButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				emulateButtonActionPerformed(evt);
+			}
+		});
+
+		step.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		step.setText("Step");
+		step.setMaximumSize(new java.awt.Dimension(79, 23));
+		step.setMinimumSize(new java.awt.Dimension(79, 23));
+		step.setPreferredSize(new java.awt.Dimension(79, 23));
+		step.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				stepActionPerformed(evt);
+			}
+		});
+
+		reset.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		reset.setText("Reset");
+		reset.setMaximumSize(new java.awt.Dimension(79, 23));
+		reset.setMinimumSize(new java.awt.Dimension(79, 23));
+		reset.setPreferredSize(new java.awt.Dimension(79, 23));
+		reset.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				resetActionPerformed(evt);
+			}
+		});
+
+		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+		jPanel2.setLayout(jPanel2Layout);
+		jPanel2Layout.setHorizontalGroup(
+			jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel2Layout.createSequentialGroup()
+			.addContainerGap()
+			.addComponent(emulateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(step, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(reset, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		jPanel2Layout.setVerticalGroup(
+			jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel2Layout.createSequentialGroup()
+			.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+			.addComponent(reset, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+			.addComponent(step, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(emulateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+			.addGap(0, 0, Short.MAX_VALUE)));
+
+		javax.swing.GroupLayout editorLayout = new javax.swing.GroupLayout(editor);
+		editor.setLayout(editorLayout);
+		editorLayout.setHorizontalGroup(
+			editorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(jsp)
+			.addComponent(jScrollPane5)
+			.addGroup(editorLayout.createSequentialGroup()
+			.addGap(61, 61, 61)
+			.addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addContainerGap(65, Short.MAX_VALUE)));
+		editorLayout.setVerticalGroup(
+			editorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(editorLayout.createSequentialGroup()
+			.addComponent(jsp, javax.swing.GroupLayout.PREFERRED_SIZE, 512, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
+		memory.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Memory", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+		jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		jScrollPane2.getHorizontalScrollBar().setModel(jScrollPane3.getHorizontalScrollBar().getModel());
+		jScrollPane2.getVerticalScrollBar().setModel(jScrollPane3.getVerticalScrollBar().getModel());
+
+		jTable1.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+		jTable1.setForeground(new java.awt.Color(102, 102, 102));
+		jTable1.setModel(new HexModel(256));
+		jScrollPane2.setViewportView(jTable1);
+
+		jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+		memoryTable.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		memoryTable.setModel(new HexModel());
+		memoryTable.setSelectionBackground(new java.awt.Color(51, 204, 0));
+		memoryTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
+		jScrollPane3.setViewportView(memoryTable);
+
+		javax.swing.GroupLayout memoryLayout = new javax.swing.GroupLayout(memory);
+		memory.setLayout(memoryLayout);
+		memoryLayout.setHorizontalGroup(
+			memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(memoryLayout.createSequentialGroup()
+			.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+			.addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)));
+		memoryLayout.setVerticalGroup(
+			memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(memoryLayout.createSequentialGroup()
+			.addGroup(memoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(jScrollPane2)
+			.addComponent(jScrollPane3))
+			.addContainerGap()));
+
+		jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Program", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+		hexPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Hex", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+		hexPane.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jScrollPane4.setViewportView(hexPane);
+
+		mnemonicPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mnemonics", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+		mnemonicPane.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+		jScrollPane1.setViewportView(mnemonicPane);
+
+		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+		jPanel1.setLayout(jPanel1Layout);
+		jPanel1Layout.setHorizontalGroup(
+			jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel1Layout.createSequentialGroup()
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)));
+		jPanel1Layout.setVerticalGroup(
+			jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanel1Layout.createSequentialGroup()
+			.addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addComponent(jScrollPane4)
+			.addComponent(jScrollPane1))
+			.addContainerGap()));
+
+		menuOne.setText("File");
+
+		mbFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+		mbFile.setText("New");
+		mbFile.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mbFileActionPerformed(evt);
+			}
+		});
+		menuOne.add(mbFile);
+		menuOne.add(mbSep1);
+
+		mbOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+		mbOpen.setText("Open File...");
+		mbOpen.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mbOpenActionPerformed(evt);
+
+			}
+		});
+		menuOne.add(mbOpen);
+		menuOne.add(mbSep2);
+
+		mbSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+		mbSave.setText("Save");
+		mbSave.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mbSaveActionPerformed(evt);
+			}
+		});
+		menuOne.add(mbSave);
+
+		mbSaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+		mbSaveAs.setText("Save As...");
+		mbSaveAs.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mbSaveAsActionPerformed(evt);
+			}
+		});
+		menuOne.add(mbSaveAs);
+		menuOne.add(mbSep3);
+
+		mbExit.setText("Exit");
+		mbExit.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				mbExitMouseClicked(evt);
+			}
+		});
+		mbExit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mbExitActionPerformed(evt);
+			}
+		});
+		menuOne.add(mbExit);
+
+		menuBar.add(menuOne);
+
+		menuEdit.setText("Edit");
+
+		eMenuUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+		eMenuUndo.setText("Undo");
+		menuEdit.add(eMenuUndo);
+
+		eMenuRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+		eMenuRedo.setText("Redo");
+
+		menuEdit.add(eMenuRedo);
+		menuEdit.add(editSep1);
+
+		eMenuCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+		eMenuCopy.setText("Copy");
+		eMenuCopy.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				textarea.copy();
+			}
+		});
+		menuEdit.add(eMenuCopy);
+
+		eMenuPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+		eMenuPaste.setText("Paste");
+		eMenuPaste.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				textarea.paste();
+			}
+		});
+		menuEdit.add(eMenuPaste);
+
+		menuBar.add(menuEdit);
+
+		menuTwo.setText("OBJ/LIST");
+		menuTwo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuTwoActionPerformed(evt);
+			}
+		});
+
+
+		jMenuItem2.setText("View");
+		jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jMenuItem2ActionPerformed(evt);
+			}
+		});
+		menuTwo.add(jMenuItem2);
+
+		menuBar.add(menuTwo);
+
+		menuThree.setText("Help");
+
+		jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItem1.setText("Code Reference");
+		jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jMenuItem1ActionPerformed(evt);
+			}
+		});
+		menuThree.add(jMenuItem1);
+
+		jMenuItem3.setText("About");
+		jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jMenuItem3ActionPerformed(evt);
+			}
+		});
+		menuThree.add(jMenuItem3);
+
+		menuBar.add(menuThree);
+
+		setJMenuBar(menuBar);
+
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+		getContentPane().setLayout(layout);
+		layout.setHorizontalGroup(
+			layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(layout.createSequentialGroup()
+			.addContainerGap()
+			.addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(editor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			.addComponent(memory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+			.addContainerGap()));
+		layout.setVerticalGroup(
+			layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(layout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+			.addComponent(memory, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(editor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(register, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+			.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
+		pack();
+	}// </editor-fold>//GEN-END:initComponents
+
+	/**
+	 * Setting the exit button action.
+	 */
+	private void mbExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbExitActionPerformed
+		System.exit(0);
+	}//GEN-LAST:event_mbExitActionPerformed
+
+	private void mbExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mbExitMouseClicked
+	}//GEN-LAST:event_mbExitMouseClicked
+
+	private void programCounterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_programCounterActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_programCounterActionPerformed
+
+	private void accFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accFieldActionPerformed
+	}//GEN-LAST:event_accFieldActionPerformed
+
+	private void indexField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexField3ActionPerformed
+	}//GEN-LAST:event_indexField3ActionPerformed
+
+	/**
+	 * Assemble Button action. Checks to see if there is a program to be
+	 * assembled, if not, prints error.
+	 */
+	private void assembleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assembleButtonActionPerformed
+		if (textarea.getText().length() == 0) {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText("PLEASE LOAD A PROGRAM BEFORE TRYING TO ASSEMBLE");
+		} else {
+			resetMod();
+			assemble();
+		}
+	}//GEN-LAST:event_assembleButtonActionPerformed
+
+	/**
+	 * Emulator Button action. If a program has been assembled, start
+	 * emulating, otherwise, display error.
+	 */
+	private void emulateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emulateButtonActionPerformed
+		if (mc.getAssembleStatus()) {
+
+			if (mc.getStatus()) {
+				errorConsole.setForeground(new Color(0, 119, 64));
+				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+				return;
+			}
+
+
+			boolean complete = mc.emulate();
+
+			if (mc.terminated()) {
+				errorConsole.setForeground(new Color(0, 119, 64));
+				errorConsole.setText("PROGRAM SUCCESSFULLY TERMINATED");
+				return;
+			}
+
+			if (complete) {
+				errorConsole.setForeground(new Color(0, 119, 64));
+				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+			} else {
+				errorConsole.setForeground(new Color(186, 31, 57));
+				errorConsole.setText(EmulatorControl.returnErrors());
+			}
+		} else {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+		}
+	}//GEN-LAST:event_emulateButtonActionPerformed
+
+	/**
+	 * Open File option.
+	 */
+	private void mbOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbOpenActionPerformed
+		String text = "";
+		fileChooser.setDialogTitle("Open");
+		int returnVal = fileChooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			try {
+				FileReader fr = new FileReader(file);
+				BufferedReader reader = new BufferedReader(fr);
+				String textLine = "";
+				while ((textLine = reader.readLine()) != null) {
+					text = text + textLine + "\n";
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			textarea.setText(text);
+			errorConsole.setText("");
+		}
+	}//GEN-LAST:event_mbOpenActionPerformed
+
+	/**
+	 * Save file; calls the saveProcess method.
+	 */
+	private void mbSaveAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveAsActionPerformed
+	{//GEN-HEADEREND:event_mbSaveAsActionPerformed
+		saveProcess();
+	}//GEN-LAST:event_mbSaveAsActionPerformed
+
+	/**
+	 * Step Emulation button. Checks to see if there is an assembled
+	 * program, if there is, perform the first instruction, if not, show an
+	 * error.
+	 */
+	private void stepActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_stepActionPerformed
+	{//GEN-HEADEREND:event_stepActionPerformed
+		if (mc.getAssembleStatus()) {
+			mc.emulateStep();
+			errorConsole.setForeground(new Color(0, 119, 64));
+			errorConsole.setText("STEP EMULATION - STEP COMPLETE");
+
+			String errors = EmulatorControl.returnErrors();
+
+			if (errors.length() != 0) {
+				errorConsole.setForeground(new Color(186, 31, 57));
+				errorConsole.setText(errors);
+			}
+
+			if (mc.getStatus()) {
+				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+				return;
+			}
+		} else {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+		}
+	}//GEN-LAST:event_stepActionPerformed
+
+	/**
+	 * Calls the reset method/resetMod method.
+	 */
+	private void resetActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetActionPerformed
+	{//GEN-HEADEREND:event_resetActionPerformed
+		if (mc.getAssembleStatus() && !textarea.getText().equals("")) {
+			reset();
+		} else {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+
+			resetMod();
+		}
+	}//GEN-LAST:event_resetActionPerformed
+
+	/*
+	 * New File option, checks to see if the program needs saving and prompts
+	 * the user. Once saved, it resets the whole program.
+	 */
+	private void mbFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbFileActionPerformed
+	{//GEN-HEADEREND:event_mbFileActionPerformed
+		if (needsSaving) {
+			new JOptionPane();
+			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+
+			if (value == 0) {
+				saveProcess();
+			} else if (value == 1) {
+				resetMod();
+				errorConsole.setText("");
+				needsSaving = false;
+				textarea.setText("");
+			} else {
+				return;
+			}
+		} else {
+			resetMod();
+			errorConsole.setText("");
+			needsSaving = false;
+			textarea.setText("");
+		}
+	}//GEN-LAST:event_mbFileActionPerformed
+
+	/**
+	 * Listens for key presses to notify the needsSaving variable.
+	 */
+	private void textareaKeyTyped(java.awt.event.KeyEvent evt)//GEN-FIRST:event_textareaKeyTyped
+	{//GEN-HEADEREND:event_textareaKeyTyped
+		needsSaving = true;
+	}//GEN-LAST:event_textareaKeyTyped
+
+	/**
+	 * Save Action, saves to the currently selected file.
+	 */
+	private void mbSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveActionPerformed
+	{//GEN-HEADEREND:event_mbSaveActionPerformed
+		needsSaving = false;
+		File file = fileChooser.getSelectedFile();
+		try {
+			String s = textarea.getText();
+			FileWriter fw = new FileWriter(file);
+			fw.write(s);
+			fw.close();
+		} catch (Exception e) {
+		}
+		needsSaving = false;
+	}//GEN-LAST:event_mbSaveActionPerformed
+
+	/**
+	 * Creates an instance of the Ref class and displays it.
+	 */
+	private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem1ActionPerformed
+	{//GEN-HEADEREND:event_jMenuItem1ActionPerformed
+		Ref re = new Ref();
+		re.createAndShowGUI();
+	}//GEN-LAST:event_jMenuItem1ActionPerformed
+
+	private void menuTwoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_menuTwoActionPerformed
+	{//GEN-HEADEREND:event_menuTwoActionPerformed
+	}//GEN-LAST:event_menuTwoActionPerformed
+
+	/**
+	 * Creates the OBJ/LST text format and sends it to an instance of the
+	 * OBJLST class and displays it.
+	 */
+	private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
+	{//GEN-HEADEREND:event_jMenuItem2ActionPerformed
+		if (!mc.getAssembleStatus()) {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText("NO PROGRAM FOUND");
+		} else {
+			LinkedList<String[]> list = createOBJLST(mc.getOriginal(), mc.getHexCodes());
+
+			StringBuilder sb = new StringBuilder();
+
+			for (int i = 0; i < list.size(); i++) {
+				for (int j = 0; j < list.get(i).length; j++) {
+					sb.append(list.get(i)[j] + "\t");
+				}
+				sb.append("\n");
+			}
+
+			new OBJLST(sb.toString(), fileChooser);
+		}
+	}//GEN-LAST:event_jMenuItem2ActionPerformed
+
+	private void accFieldInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_accFieldInputMethodTextChanged
+	{//GEN-HEADEREND:event_accFieldInputMethodTextChanged
+	}//GEN-LAST:event_accFieldInputMethodTextChanged
+
+	private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextField4ActionPerformed
+	{//GEN-HEADEREND:event_jTextField4ActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_jTextField4ActionPerformed
+
+	private void OveBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_OveBitActionPerformed
+	{//GEN-HEADEREND:event_OveBitActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_OveBitActionPerformed
+
+	private void negBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_negBitActionPerformed
+	{//GEN-HEADEREND:event_negBitActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_negBitActionPerformed
+
+	private void zerBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_zerBitActionPerformed
+	{//GEN-HEADEREND:event_zerBitActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_zerBitActionPerformed
+
+	private void carBitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_carBitActionPerformed
+	{//GEN-HEADEREND:event_carBitActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_carBitActionPerformed
+
+	/**
+	 * Switches the program to base 10 mode.
+	 */
+	private void decimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_decimalActionPerformed
+	{//GEN-HEADEREND:event_decimalActionPerformed
+		baseMode = true;
+		setDec();
+
+		errorConsole.setForeground(new Color(0, 119, 64));
+		errorConsole.setText("DISPLAYING VALUES IN DECIMAL (BASE 10)");
+	}//GEN-LAST:event_decimalActionPerformed
+
+	/**
+	 * Switches the program to base 16 mode.
+	 */
+	private void hexadecimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_hexadecimalActionPerformed
+	{//GEN-HEADEREND:event_hexadecimalActionPerformed
+		baseMode = false;
+		setHex();
+
+		errorConsole.setForeground(new Color(0, 119, 64));
+		errorConsole.setText("DISPLAYING VALUES IN HEXADECIMAL (BASE 16)");
+	}//GEN-LAST:event_hexadecimalActionPerformed
+
+	/**
+	 * Creates an instance of the About class and displays it.
+	 */
+	private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem3ActionPerformed
+	{//GEN-HEADEREND:event_jMenuItem3ActionPerformed
+		new About();
+	}//GEN-LAST:event_jMenuItem3ActionPerformed
+
+	/**
+	 * Returns the table with the index values. Used only when the memory
+	 * needs to be extended.
+	 */
+	public JTable getTable() {
+		return jTable1;
+	}
+
+	/**
+	 * Returns the text from the textarea.
+	 */
+	public JTextArea getTextArea() {
+		return textarea;
+	}
+
+	/**
+	 * Changes all the values in the program to Hexadecimal (Default).
+	 */
+	public void setHex() {
+		baseMode = false;
+		accField.setText(format(Integer.toHexString(Integer.parseInt(accField.getText()))));
+		programCounter.setText(format(Integer.toHexString(Integer.parseInt(programCounter.getText()))));
+
+		indexField1.setText(format(Integer.toHexString(Integer.parseInt(indexField1.getText()))));
+		indexField2.setText(format(Integer.toHexString(Integer.parseInt(indexField2.getText()))));
+		indexField3.setText(format(Integer.toHexString(Integer.parseInt(indexField3.getText()))));
+
+		inputField.setText(format(Integer.toHexString(Integer.parseInt(inputField.getText()))));
+		outputField.setText(format(Integer.toHexString(Integer.parseInt(outputField.getText()))));
+	}
+
+	/**
+	 * Changes all the values in the program to decimal.
+	 */
+	public void setDec() {
+		baseMode = true;
+		accField.setText(format(Integer.parseInt(accField.getText(), 16) + ""));
+		programCounter.setText(format(Integer.parseInt(programCounter.getText(), 16) + ""));
+		indexField1.setText(format(Integer.parseInt(indexField1.getText(), 16) + ""));
+		indexField2.setText(format(Integer.parseInt(indexField2.getText(), 16) + ""));
+		indexField3.setText(format(Integer.parseInt(indexField3.getText(), 16) + ""));
+
+		inputField.setText(format(Integer.parseInt(inputField.getText(), 16) + ""));
+		outputField.setText(format(Integer.parseInt(outputField.getText(), 16) + ""));
+	}
+
+	/**
+	 * Formats text to be 4 characters long if it is not already.
+	 */
+	public String format(String f) {
+		f = f.toUpperCase();
+
+		if (f.length() == 1) {
+			return "000" + f;
+		} else if (f.length() == 2) {
+			return "00" + f;
+		} else if (f.length() == 3) {
+			return "0" + f;
+		} else {
+			return f;
+		}
+	}
+
+	/**
+	 * Returns the current base mode of the program.
+	 */
+	public static boolean getBaseMode() {
+		// true = base 10; false = base 16;
+		return baseMode;
+	}
+
+	/**
+	 * Resets the 3 registers to their default values.
+	 */
+	public void resetRegisters() {
+		negBit.setText("0");
+		carBit.setText("0");
+		zerBit.setText("1");
+	}
+
+	/**
+	 * Setters for status register bits.
+	 */
+	public static void setNegBit(boolean a) {
+		if (a) {
+			negBit.setText("1");
+		} else {
+			negBit.setText("0");
+		}
+	}
+
+	public static boolean getNegBit() {
+		if (negBit.getText().equals("1")) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public static void setCarBit(boolean a) {
+		if (a) {
+			carBit.setText("1");
+		} else {
+			carBit.setText("0");
+		}
+	}
+
+	public static void setZerBit(boolean a) {
+		if (a) {
+			zerBit.setText("1");
+		} else {
+			zerBit.setText("0");
+		}
+	}
+
+	/**
+	 * Method used to check if a valid input has been entered into one of
+	 * the text fields.
+	 */
+	private boolean correctChar(char a) {
+		if (a >= '0' && a <= '9') {
+			return true;
+		}
+
+		if (a == 'A') {
+			return true;
+		} else if (a == 'B') {
+			return true;
+		} else if (a == 'C') {
+			return true;
+		} else if (a == 'D') {
+			return true;
+		} else if (a == 'E') {
+			return true;
+		} else if (a == 'F') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Method used to check if a valid input has been entered into one of
+	 * the text fields.
+	 */
+	private boolean runInputCheck(String s) {
+		if (!baseMode) {
+			s = s.toUpperCase();
+
+			if (s.length() > 4) {
+				return false;
+			} else {
+				for (int i = 0; i < s.length(); i++) {
+					if (!correctChar(s.charAt(i))) {
+						return false;
+					}
+				}
+				return true;
+			}
+		} else {
+			if (s.length() > 5) {
+				return false;
+			} else {
+				for (int i = 0; i < s.length(); i++) {
+					if (!(s.charAt(i) >= '0' && s.charAt(i) <= '9')) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+	}
+
+	/**
+	 * $$Redundant method$$ Exactly the same as format method.
+	 */
+	private String formatNum(String num) {
+		if (num.length() == 1) {
+			num = "000" + num;
+		} else if (num.length() == 2) {
+			num = "00" + num;
+		} else if (num.length() == 3) {
+			num = "0" + num;
+		}
+
+		return num.toUpperCase();
+	}
+
+	/**
+	 * Method that creates the OBJLST text.
+	 */
+	public LinkedList<String[]> createOBJLST(String pText, String[] hexCodes) {
+		String[] text = pText.split("\n");
+		int begin = 0;
+		boolean beginAssigned = false;
+
+		for (int i = 0; i < text.length; i++) {
+			String org = text[i].trim().toUpperCase();
+			if (org.startsWith("ORG")) {
+				if (!beginAssigned) {
+					begin = i++;
+					beginAssigned = true;
+				}
+			}
+		}
+
+		LinkedList<String[]> obj = new LinkedList<String[]>();
+
+		for (int i = 0, j = 0; i < text.length; i++) {
+
+			String[] line = new String[4];
+
+			// If it is the last line, do this and break.
+			if (i == text.length - 1) {
+				line[0] = formatNum(Integer.toHexString(i));
+				line[1] = "";
+				line[2] = "";
+				line[3] = text[i];
+				obj.add(line);
+				break;
+			}
+
+			line[0] = formatNum(Integer.toHexString(i));
+
+			if (!(text[i].startsWith("*") || text[i].equals("\\s+"))) {
+				if (j != 0) {
+					line[1] = formatNum(Integer.toHexString(j));
+				} else {
+					line[1] = "";
+				}
+
+
+				if (!hexCodes[j].startsWith("ORG")) {
+					line[2] = hexCodes[j];
+				} else {
+					line[2] = "";
+				}
+
+			} else {
+				line[1] = "\t";
+				line[2] = "\t";
+			}
+
+			line[3] = text[i];
+
+			obj.add(line);
+
+			if (i >= begin) {
+				j++;
+			}
+		}
+		return obj;
+	}
+
+	/**
+	 * Pulls up a save dialog and asks the user to save.
+	 */
+	private void saveProcess() {
+		fileChooser.setDialogTitle("Save As...");
+		int returnVal = fileChooser.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = null;
+
+			try {
+				String a = fileChooser.getSelectedFile().getPath();
+				a = a.substring(0, a.indexOf("."));
+				file = new File(a + ".ASM");
+			} catch (Exception exc) {
+				file = new File(fileChooser.getSelectedFile() + ".ASM");
+			}
+
+			if (file == null) {
+				file = new File(fileChooser.getSelectedFile() + ".ASM");
+			}
+
+			try {
+				String s = textarea.getText();
+				FileWriter fw = new FileWriter(file);
+				fw.write(s);
+				fw.close();
+			} catch (Exception e) {
+			}
+
+		}
+	}
+
+	/**
+	 * Resets the tables in the program to their default sizes of 256 cells.
+	 */
+	public void resetTables() {
+		HexModel hm = new HexModel(256);
+		HexModel hm2 = new HexModel(true, 256);
+
+		getTable().setModel(hm);
+		getTable().validate();
+		getTable().repaint();
+
+		getMemoryTable().setModel(hm2);
+		getMemoryTable().validate();
+		getMemoryTable().repaint();
+	}
+
+	/**
+	 * A modified version of the reset method that does not assemble the
+	 * program again. Resets all values to their defaults.
+	 */
+	public void resetMod() {
+		resetTables();
+
+		accField.setText("0000");
+		programCounter.setText("0000");
+		indexField1.setText("0000");
+		indexField2.setText("0000");
+		indexField3.setText("0000");
+		inputField.setText("0000");
+		outputField.setText("0000");
+		String[] empty = new String[]{""};
+		mnemonicPane.setListData(empty);
+		hexPane.setListData(empty);
+		memoryTable.clearSelection();
+		resetRegisters();
+
+		if (baseMode) {
+			setDec();
+		}
+
+		errorConsole.setForeground(new Color(0, 119, 64));
+		errorConsole.setText("PROGRAM SUCCESSFULLY RESET");
+	}
+
+	/**
+	 * Resets all values to their defaults and reassembles.
+	 */
+	public void reset() {
+		for (int i = 0; i < memoryTable.getRowCount(); i++) {
+			memoryTable.setValueAt("", i, 0);
+		}
+		accField.setText("0000");
+		programCounter.setText("0000");
+		indexField1.setText("0000");
+		indexField2.setText("0000");
+		indexField3.setText("0000");
+		inputField.setText("0000");
+		outputField.setText("0000");
+		String[] empty = new String[]{""};
+		mnemonicPane.setListData(empty);
+		hexPane.setListData(empty);
+		memoryTable.clearSelection();
+		resetRegisters();
+		assemble();
+
+		if (baseMode) {
+			setDec();
+		}
+
+		errorConsole.setForeground(new Color(0, 119, 64));
+		errorConsole.setText("PROGRAM SUCCESSFULLY RESET");
+	}
+
+	/**
+	 * Assemble method, sends the command to the main control to assemble,
+	 * if successful, it updates all the tables and lists. Else it displays
+	 * any errors that occurred with the assembly process.
+	 */
+	public void assemble() {
+		String error = mc.assemble(textarea.getText());
+
+		if (mc.getProgram().getHasErrors() == true) {
+			errorConsole.setForeground(new Color(186, 31, 57));
+			errorConsole.setText(error);
+		} else {
+			try {
+				errorConsole.setForeground(new Color(0, 119, 64));
+				errorConsole.setText("PROGRAM SUCCESSFULLY ASSEMBLED");
+				mnemonicPane.setListData(mc.updateMnemonicPane());
+				hexPane.setListData(mc.updateHexPane());
+				memoryTable = mc.updateMemoryTable(memoryTable);
+			} catch (Exception e) {
+				resetMod();
+				errorConsole.setForeground(new Color(186, 31, 57));
+				errorConsole.setText("UNEXPECTED ERROR OCCURED DURING ASSEMBLY\nPLEASE CHECK YOUR PROGRAM CAREFULLY");
+			}
+		}
+	}
+
+	/**
+	 * Sets the value of the program counter.
+	 */
+	public void setProgramCounter(String value) {
+		programCounter.setText(value);
+	}
+
+	/**
+	 * Returns the table containing all the program memory.
+	 */
+	public static JTable getMemoryTable() {
+		return memoryTable;
+	}
+
+	/**
+	 * Returns the list containing all the Hex codes.
+	 */
+	public static JList getHexPane() {
+		return hexPane;
+	}
+
+	/**
+	 * Returns the list containing all the mnemonic commands.
+	 */
+	public static JList getMnemonicPane() {
+		return mnemonicPane;
+	}
+
+	/**
+	 * Returns the value of the index desired.
+	 */
+	public static String getIndexValue(String register) {
+		if (register.equalsIgnoreCase("1")) {
+			return getIndex1();
+		} else if (register.equalsIgnoreCase("2")) {
+			return getIndex2();
+		} else {
+			return getIndex3();
+		}
+	}
+
+	/**
+	 * Returns the value of the ACC field.
+	 */
+	public static String getAccField() {
+		return accField.getText();
+	}
+
+	/**
+	 * Sets the value of the ACC to the parameter.
+	 */
+	public static void setAccumulator(String num) {
+		accField.setText(num);
+	}
+
+	/**
+	 * Getter and Setter methods for all 3 indices.
+	 */
+	public static String getIndex1() {
+		return indexField1.getText();
+	}
+
+	public static String getIndex2() {
+		return indexField2.getText();
+	}
+
+	public static String getIndex3() {
+		return indexField3.getText();
+	}
+
+	public static void setIndex1(String i) {
+		indexField1.setText(i);
+	}
+
+	public static void setIndex2(String i) {
+		indexField2.setText(i);
+	}
+
+	public static void setIndex3(String i) {
+		indexField3.setText(i);
+	}
+
+	/**
+	 * Getter and Setter methods for the input and output fields.
+	 */
+	public static void setInputField(String input) {
+		inputField.setText(input.toUpperCase());
+	}
+
+	public static String getInputField() {
+		return inputField.getText();
+	}
+
+	public static void setOutputField(String output) {
+		outputField.setText(output.toUpperCase());
+	}
+
+	public static String getOutputField() {
+		return outputField.getText();
+	}
+
+	/**
+	 * Methods that asks the user for an input
+	 */
+	public static String newValue() {
+		JOptionPane jp = new JOptionPane("Input");
+		String value = jp.showInputDialog(null, "Enter value (Type #D (Decimal), #B (Binary), #O (Octal), followed by a value.\n\tDefault base is Hex.");
+
+		// If the user does not enter anything, returns "ERROR". 
+		if (value == null) {
+			return "NULL";
+		} else if (value.length() == 0) {
+			return "ERROR";
+		}
+
+		try {
+			if (value.indexOf("#") == -1) {
+				value = neg(16, value);
+			} else {
+				if (value.substring(1, 2).equalsIgnoreCase("B")) {
+					value = neg(2, value.substring(2));
+				} else if (value.substring(1, 2).equalsIgnoreCase("D")) {
+					value = neg(10, value.substring(2));
+				} else if (value.substring(1, 2).equalsIgnoreCase("O")) {
+					value = neg(8, value.substring(2));
+				} else {
+					throw new NumberFormatException();
+				}
+			}
+		} catch (NumberFormatException nfe) {
+		}
+		return value;
+	}
+
+	private static String neg(int base, String value) {
+		if (value.contains("-")) {
+			setNegBit(true);
+			value = Integer.toHexString(Integer.parseInt(value, base)).toUpperCase();
+			String newValue = "";
+			for (int i = 0; i < 4; i++) {
+				newValue += value.charAt(i + 4);
+			}
+			return newValue;
+		} else {
+			return Integer.toHexString(Integer.parseInt(value, base));
+		}
+	}
+
+	public String[] getProgram() {
+		return mc.getProgramText();
+	}
+
+	public SymbolTable getST() {
+		return mc.getProgram().getSymbolTable();
+	}
+	private boolean needsSaving;
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private static javax.swing.JTextField OveBit;
+	private static javax.swing.JTextField accField;
+	private javax.swing.JButton assembleButton;
+	private javax.swing.ButtonGroup buttonGroup1;
+	private static javax.swing.JTextField carBit;
+	private javax.swing.JRadioButton decimal;
+	private javax.swing.JPanel editor;
+	private javax.swing.JButton emulateButton;
+	private javax.swing.JTextArea errorConsole;
+	private javax.swing.JFileChooser fileChooser;
+	private static javax.swing.JList hexPane;
+	private javax.swing.JRadioButton hexadecimal;
+	private static javax.swing.JTextField indexField1;
+	private static javax.swing.JTextField indexField2;
+	private static javax.swing.JTextField indexField3;
+	private static javax.swing.JTextField inputField;
+	private javax.swing.JLabel jLabel1;
+	private javax.swing.JLabel jLabel10;
+	private javax.swing.JLabel jLabel11;
+	private javax.swing.JLabel jLabel12;
+	private javax.swing.JLabel jLabel13;
+	private javax.swing.JLabel jLabel2;
+	private javax.swing.JLabel jLabel3;
+	private javax.swing.JLabel jLabel4;
+	private javax.swing.JLabel jLabel5;
+	private javax.swing.JLabel jLabel6;
+	private javax.swing.JLabel jLabel7;
+	private javax.swing.JLabel jLabel8;
+	private javax.swing.JMenuItem jMenuItem1;
+	private javax.swing.JMenuItem jMenuItem2;
+	private javax.swing.JMenuItem jMenuItem3;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanel2;
+	private javax.swing.JPanel jPanel3;
+	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JScrollPane jScrollPane2;
+	private javax.swing.JScrollPane jScrollPane3;
+	private javax.swing.JScrollPane jScrollPane4;
+	private javax.swing.JScrollPane jScrollPane5;
+	private javax.swing.JSeparator jSeparator3;
+	private javax.swing.JSeparator jSeparator4;
+	private javax.swing.JTable jTable1;
+	private javax.swing.JTextField jTextField4;
+	private javax.swing.JScrollPane jsp;
+	private javax.swing.JTextArea lines;
+	private javax.swing.JMenuItem mbExit;
+	private javax.swing.JMenuItem mbFile;
+	private javax.swing.JMenuItem mbOpen;
+	private javax.swing.JMenuItem mbSave;
+	private javax.swing.JMenuItem mbSaveAs;
+	private javax.swing.JPopupMenu.Separator mbSep1;
+	private javax.swing.JPopupMenu.Separator mbSep2;
+	private javax.swing.JPopupMenu.Separator mbSep3;
+	private javax.swing.JPanel memory;
+	private static javax.swing.JTable memoryTable;
+	private javax.swing.JMenuBar menuBar;
+	private javax.swing.JMenu menuOne;
+	private javax.swing.JMenu menuThree;
+	private javax.swing.JMenu menuTwo;
+	private javax.swing.JMenu menuEdit;
+	private javax.swing.JPopupMenu.Separator editSep1;
+	private javax.swing.JPopupMenu.Separator editSep2;
+	private javax.swing.JPopupMenu.Separator editSep3;
+	private javax.swing.JMenuItem eMenuCopy;
+	private javax.swing.JMenuItem eMenuPaste;
+	private javax.swing.JMenuItem eMenuUndo;
+	private javax.swing.JMenuItem eMenuRedo;
+	private static javax.swing.JList mnemonicPane;
+	private static javax.swing.JTextField negBit;
+	private static javax.swing.JTextField outputField;
+	private javax.swing.JTextField programCounter;
+	private javax.swing.JPanel register;
+	private javax.swing.JButton reset;
+	private javax.swing.JButton step;
+	private UndoableTextArea textarea;
+	private static javax.swing.JTextField zerBit;
+	// End of variables declaration//GEN-END:variables
 }
