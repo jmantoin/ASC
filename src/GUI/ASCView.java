@@ -14,7 +14,6 @@ import Program.SymbolTable;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ public class ASCView extends javax.swing.JFrame {
 	private MainControl mc;
 	// false - base 16, true - base 10
 	private static boolean baseMode = false;
-	UndoableTextArea m_undoableTextArea = new UndoableTextArea();
+	//UndoableTextArea m_undoableTextArea = new UndoableTextArea();
 
 	/**
 	 * Creates new form ASCView
@@ -54,8 +53,8 @@ public class ASCView extends javax.swing.JFrame {
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
-
-		fileChooser = new javax.swing.JFileChooser();
+		saveFileChooser = new CustomSaveFileChooser();
+		openFileChooser = new CustomOpenFileChooser();
 		lines = new javax.swing.JTextArea("1");
 		buttonGroup1 = new javax.swing.ButtonGroup();
 		register = new javax.swing.JPanel();
@@ -89,9 +88,9 @@ public class ASCView extends javax.swing.JFrame {
 		jLabel13 = new javax.swing.JLabel();
 		decimal = new javax.swing.JRadioButton();
 		hexadecimal = new javax.swing.JRadioButton();
-		editor = new javax.swing.JPanel();
-		jsp = new javax.swing.JScrollPane(m_undoableTextArea);
 		textarea = new UndoableTextArea();
+		editor = new javax.swing.JPanel();
+		jsp = new javax.swing.JScrollPane();
 		jScrollPane5 = new javax.swing.JScrollPane();
 		errorConsole = new javax.swing.JTextArea();
 		jPanel2 = new javax.swing.JPanel();
@@ -118,23 +117,20 @@ public class ASCView extends javax.swing.JFrame {
 		mbSaveAs = new javax.swing.JMenuItem();
 		mbSep3 = new javax.swing.JPopupMenu.Separator();
 		mbExit = new javax.swing.JMenuItem();
-		menuEdit = new javax.swing.JMenu();
-		eMenuCopy = new javax.swing.JMenuItem();
-		eMenuPaste = new javax.swing.JMenuItem();
-		eMenuUndo = new javax.swing.JMenuItem();
-		eMenuRedo = new javax.swing.JMenuItem();
-		editSep1 = new javax.swing.JPopupMenu.Separator();
-		editSep2 = new javax.swing.JPopupMenu.Separator();
-		editSep3 = new javax.swing.JPopupMenu.Separator();
 		menuTwo = new javax.swing.JMenu();
 		jMenuItem2 = new javax.swing.JMenuItem();
 		menuThree = new javax.swing.JMenu();
 		jMenuItem1 = new javax.swing.JMenuItem();
 		jMenuItem3 = new javax.swing.JMenuItem();
 
-		fileChooser.setAccessory(mbOpen);
-		fileChooser.setDialogTitle("Open File...");
-		fileChooser.setFileFilter(new GUI.FileFilter());
+		openFileChooser.setAccessory(mbOpen);
+		openFileChooser.setDialogTitle("Open File...");
+		openFileChooser.setFileFilter(new GUI.FileFilter());
+
+		saveFileChooser.setAccessory(mbOpen);
+		saveFileChooser.setDialogTitle("Open File...");
+		saveFileChooser.setFileFilter(new GUI.FileFilter());
+
 
 		lines.setEditable(false);
 		lines.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
@@ -667,32 +663,9 @@ public class ASCView extends javax.swing.JFrame {
 				textareaKeyTyped(evt);
 			}
 		});
-		textarea.getDocument().addDocumentListener(new DocumentListener() {
-			public String getText() {
-				int caretPosition = textarea.getDocument().getLength();
-				Element root = textarea.getDocument().getDefaultRootElement();
-				String text = "1" + System.getProperty("line.separator");
-				for (int i = 2; i < root.getElementIndex(caretPosition) + 2; i++) {
-					text += i + System.getProperty("line.separator");
-				}
-				return text;
-			}
 
-			@Override
-			public void changedUpdate(DocumentEvent de) {
-				lines.setText(getText());
-			}
+		initLineListener();
 
-			@Override
-			public void insertUpdate(DocumentEvent de) {
-				lines.setText(getText());
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent de) {
-				lines.setText(getText());
-			}
-		});
 		jsp.setViewportView(textarea);
 
 		jScrollPane5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -897,37 +870,7 @@ public class ASCView extends javax.swing.JFrame {
 
 		menuBar.add(menuOne);
 
-		menuEdit.setText("Edit");
 
-		eMenuUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-		eMenuUndo.setText("Undo");
-		menuEdit.add(eMenuUndo);
-
-		eMenuRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-		eMenuRedo.setText("Redo");
-
-		menuEdit.add(eMenuRedo);
-		menuEdit.add(editSep1);
-
-		eMenuCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-		eMenuCopy.setText("Copy");
-		eMenuCopy.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				textarea.copy();
-			}
-		});
-		menuEdit.add(eMenuCopy);
-
-		eMenuPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
-		eMenuPaste.setText("Paste");
-		eMenuPaste.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				textarea.paste();
-			}
-		});
-		menuEdit.add(eMenuPaste);
-
-		menuBar.add(menuEdit);
 
 		menuTwo.setText("OBJ/LIST");
 		menuTwo.addActionListener(new java.awt.event.ActionListener() {
@@ -999,9 +942,52 @@ public class ASCView extends javax.swing.JFrame {
 	}// </editor-fold>//GEN-END:initComponents
 
 	/**
+	 * initializing listener for line number updates
+	 */
+	private void initLineListener() {
+		textarea.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent de) {
+				lines.setText(getText());
+			}
+		});
+	}
+
+	public String getText() {
+		int caretPosition = textarea.getDocument().getLength();
+		Element root = textarea.getDocument().getDefaultRootElement();
+		String text = "1" + System.getProperty("line.separator");
+		for (int i = 2; i < root.getElementIndex(caretPosition) + 2; i++) {
+			text += i + System.getProperty("line.separator");
+		}
+		return text;
+	}
+
+	/**
 	 * Setting the exit button action.
 	 */
 	private void mbExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbExitActionPerformed
+		if (needsSaving) {
+			new JOptionPane();
+			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+			if (value == 0) {
+				saveProcess();
+			} else if (value == 1) {
+				System.exit(0);
+			} else {
+				return;
+			}
+		}
 		System.exit(0);
 	}//GEN-LAST:event_mbExitActionPerformed
 
@@ -1070,26 +1056,30 @@ public class ASCView extends javax.swing.JFrame {
 	/**
 	 * Open File option.
 	 */
-	private void mbOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbOpenActionPerformed
-		String text = "";
-		fileChooser.setDialogTitle("Open");
-		int returnVal = fileChooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile();
-			try {
-				FileReader fr = new FileReader(file);
-				BufferedReader reader = new BufferedReader(fr);
-				String textLine = "";
-				while ((textLine = reader.readLine()) != null) {
-					text = text + textLine + "\n";
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
+	private void mbOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbOpenActionPerformed  
+		if (needsSaving) {
+			new JOptionPane();
+			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+			if (value == 0) {
+				saveProcess();
 			}
-			textarea.setText(text);
-			errorConsole.setText("");
 		}
-	}//GEN-LAST:event_mbOpenActionPerformed
+		openFileChooser.setDialogTitle("Open");
+		int returnVal = openFileChooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = openFileChooser.getSelectedFile();
+			try {
+				// What to do with the file  
+				textarea.read(new FileReader(file.getAbsolutePath()), null);
+				setTitle("ASC Assembler & Emulator  -  " + file.getName());
+			} catch (IOException ex) {
+			}
+		}
+		errorConsole.setText("");
+		textarea.getDocument().addUndoableEditListener(textarea);  //re-implement listener for undo/redo actions
+		initLineListener();	//re-implement listener for line number updating
+		lines.setText(getText());	//Reset line numbers
+	}//GEN-LAST:event_mbOpenActionPerformed  
 
 	/**
 	 * Save file; calls the saveProcess method.
@@ -1097,6 +1087,8 @@ public class ASCView extends javax.swing.JFrame {
 	private void mbSaveAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveAsActionPerformed
 	{//GEN-HEADEREND:event_mbSaveAsActionPerformed
 		saveProcess();
+		needsSaving = false;
+		justSaved = true;
 	}//GEN-LAST:event_mbSaveAsActionPerformed
 
 	/**
@@ -1155,11 +1147,20 @@ public class ASCView extends javax.swing.JFrame {
 
 			if (value == 0) {
 				saveProcess();
+				errorConsole.setText("");
+				needsSaving = false;
+				textarea.setText("");
+				textarea.resetUndoManager();
+				saveFileChooser.setSelectedFile(null);
+				setTitle("ASC Assembler & Emulator");
 			} else if (value == 1) {
 				resetMod();
 				errorConsole.setText("");
 				needsSaving = false;
 				textarea.setText("");
+				textarea.resetUndoManager();
+				saveFileChooser.setSelectedFile(null);
+				setTitle("ASC Assembler & Emulator");
 			} else {
 				return;
 			}
@@ -1168,6 +1169,10 @@ public class ASCView extends javax.swing.JFrame {
 			errorConsole.setText("");
 			needsSaving = false;
 			textarea.setText("");
+			textarea.resetUndoManager();
+			saveFileChooser.setSelectedFile(null);
+			setTitle("ASC Assembler & Emulator");
+			justSaved = true;
 		}
 	}//GEN-LAST:event_mbFileActionPerformed
 
@@ -1176,7 +1181,11 @@ public class ASCView extends javax.swing.JFrame {
 	 */
 	private void textareaKeyTyped(java.awt.event.KeyEvent evt)//GEN-FIRST:event_textareaKeyTyped
 	{//GEN-HEADEREND:event_textareaKeyTyped
-		needsSaving = true;
+		if (justSaved) {
+			justSaved = false;
+		} else {
+			needsSaving = true;
+		}
 	}//GEN-LAST:event_textareaKeyTyped
 
 	/**
@@ -1185,15 +1194,21 @@ public class ASCView extends javax.swing.JFrame {
 	private void mbSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveActionPerformed
 	{//GEN-HEADEREND:event_mbSaveActionPerformed
 		needsSaving = false;
-		File file = fileChooser.getSelectedFile();
-		try {
-			String s = textarea.getText();
-			FileWriter fw = new FileWriter(file);
-			fw.write(s);
-			fw.close();
-		} catch (Exception e) {
+		File file = saveFileChooser.getSelectedFile();
+		if (file == null) {
+			saveProcess();
+		} else {
+			try {
+				String s = textarea.getText();
+
+				FileWriter fw = new FileWriter(file);
+				fw.write(s);
+				fw.close();
+			} catch (Exception e) {
+			}
 		}
 		needsSaving = false;
+		justSaved = true;
 	}//GEN-LAST:event_mbSaveActionPerformed
 
 	/**
@@ -1230,7 +1245,7 @@ public class ASCView extends javax.swing.JFrame {
 				sb.append("\n");
 			}
 
-			new OBJLST(sb.toString(), fileChooser);
+			new OBJLST(sb.toString(), saveFileChooser);
 		}
 	}//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -1554,32 +1569,36 @@ public class ASCView extends javax.swing.JFrame {
 	 * Pulls up a save dialog and asks the user to save.
 	 */
 	private void saveProcess() {
-		fileChooser.setDialogTitle("Save As...");
-		int returnVal = fileChooser.showSaveDialog(this);
+		saveFileChooser.setDialogTitle("Save As...");
+		int returnVal = saveFileChooser.showSaveDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = null;
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = null;
 
-			try {
-				String a = fileChooser.getSelectedFile().getPath();
-				a = a.substring(0, a.indexOf("."));
-				file = new File(a + ".ASM");
-			} catch (Exception exc) {
-				file = new File(fileChooser.getSelectedFile() + ".ASM");
-			}
+				try {
+					String a = saveFileChooser.getSelectedFile().getPath();
+					a = a.substring(0, a.indexOf("."));
+					file = new File(a + ".ASM");
+				} catch (Exception exc) {
+					file = new File(saveFileChooser.getSelectedFile() + ".ASM");
+				}
 
-			if (file == null) {
-				file = new File(fileChooser.getSelectedFile() + ".ASM");
-			}
+				if (file == null) {
+					file = new File(saveFileChooser.getSelectedFile() + ".ASM");
+				}
 
-			try {
-				String s = textarea.getText();
-				FileWriter fw = new FileWriter(file);
-				fw.write(s);
-				fw.close();
-			} catch (Exception e) {
+				try {
+					String s = textarea.getText();
+					FileWriter fw = new FileWriter(file);
+					fw.write(s);
+					fw.close();
+				} catch (Exception e) {
+				}
+				setTitle("ASC Assembler & Emulator  -  " + file.getName());
 			}
 
 		}
+
 	}
 
 	/**
@@ -1836,7 +1855,9 @@ public class ASCView extends javax.swing.JFrame {
 	public SymbolTable getST() {
 		return mc.getProgram().getSymbolTable();
 	}
+	private boolean justSaved;
 	private boolean needsSaving;
+	private String curFileName;
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private static javax.swing.JTextField OveBit;
 	private static javax.swing.JTextField accField;
@@ -1847,7 +1868,8 @@ public class ASCView extends javax.swing.JFrame {
 	private javax.swing.JPanel editor;
 	private javax.swing.JButton emulateButton;
 	private javax.swing.JTextArea errorConsole;
-	private javax.swing.JFileChooser fileChooser;
+	private CustomSaveFileChooser saveFileChooser;
+	private CustomOpenFileChooser openFileChooser;
 	private static javax.swing.JList hexPane;
 	private javax.swing.JRadioButton hexadecimal;
 	private static javax.swing.JTextField indexField1;
@@ -1897,14 +1919,6 @@ public class ASCView extends javax.swing.JFrame {
 	private javax.swing.JMenu menuOne;
 	private javax.swing.JMenu menuThree;
 	private javax.swing.JMenu menuTwo;
-	private javax.swing.JMenu menuEdit;
-	private javax.swing.JPopupMenu.Separator editSep1;
-	private javax.swing.JPopupMenu.Separator editSep2;
-	private javax.swing.JPopupMenu.Separator editSep3;
-	private javax.swing.JMenuItem eMenuCopy;
-	private javax.swing.JMenuItem eMenuPaste;
-	private javax.swing.JMenuItem eMenuUndo;
-	private javax.swing.JMenuItem eMenuRedo;
 	private static javax.swing.JList mnemonicPane;
 	private static javax.swing.JTextField negBit;
 	private static javax.swing.JTextField outputField;

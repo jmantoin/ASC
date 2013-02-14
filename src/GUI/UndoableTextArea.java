@@ -1,7 +1,5 @@
-/*
- * Based on code from http://www.java2s.com/Code/Java/Swing-JFC/CreatingTextAreawithUndoRedoCapabilities.htm
- */
-package UndoRedo;
+
+package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,11 +19,11 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-public class UndoableTextArea extends JTextArea implements UndoableEditListener, FocusListener,
-	KeyListener {
+class UndoableTextArea extends JTextArea implements UndoableEditListener, FocusListener,
+  KeyListener {
 
 	private UndoManager m_undoManager;
-	
+
 	public UndoableTextArea() {
 		this(new String());
 	}
@@ -36,44 +34,44 @@ public class UndoableTextArea extends JTextArea implements UndoableEditListener,
 		this.addKeyListener(this);
 		this.addFocusListener(this);
 		createUndoMananger();
+
 	}
-	
-	private void createUndoMananger() {
+
+	public void createUndoMananger() {
 		m_undoManager = new UndoManager();
 		m_undoManager.setLimit(100);
 	}
 
-	private void removeUndoMananger() {
-		m_undoManager.end();
+	public void removeUndoMananger() {
+	m_undoManager.end();
 	}
-	
-	public void resetUndoManager() {
-		removeUndoMananger();
-		createUndoMananger();
-	}
-	public void focusGained(FocusEvent fe) {} //ignore
 
-	public void focusLost(FocusEvent fe) {} //ignore
+	public void focusGained(FocusEvent fe) {
+	}
+
+	public void focusLost(FocusEvent fe) {
+	}
 
 	public void undoableEditHappened(UndoableEditEvent e) {
 		m_undoManager.addEdit(e.getEdit());
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if ((e.getKeyCode() == KeyEvent.VK_Z) && (e.isControlDown())) {
-			try {
-				m_undoManager.undo();
-			} catch (CannotUndoException cue) {
-				Toolkit.getDefaultToolkit().beep();
-			}
-		}
+	}
 
-		if ((e.getKeyCode() == KeyEvent.VK_Y) && (e.isControlDown())) {
-			try {
-				m_undoManager.redo();
-			} catch (CannotRedoException cue) {
-				Toolkit.getDefaultToolkit().beep();
-			}
+	public void undoLast() {
+		try {
+			m_undoManager.undo();
+		} catch (CannotUndoException cue) {
+			Toolkit.getDefaultToolkit().beep();
+		}
+	}
+
+	public void redoLast() {
+		try {
+			m_undoManager.redo();
+		} catch (CannotRedoException cue) {
+			Toolkit.getDefaultToolkit().beep();
 		}
 	}
 
