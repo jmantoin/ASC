@@ -53,6 +53,7 @@ public class ASCView extends javax.swing.JFrame {
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
+
 		saveFileChooser = new CustomSaveFileChooser();
 		openFileChooser = new CustomOpenFileChooser();
 		lines = new javax.swing.JTextArea("1");
@@ -949,16 +950,19 @@ public class ASCView extends javax.swing.JFrame {
 			@Override
 			public void changedUpdate(DocumentEvent de) {
 				lines.setText(getText());
+				textAreaChanged = true;
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent de) {
 				lines.setText(getText());
+				textAreaChanged = true;
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent de) {
 				lines.setText(getText());
+				textAreaChanged = true;
 			}
 		});
 	}
@@ -979,9 +983,11 @@ public class ASCView extends javax.swing.JFrame {
 	private void mbExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbExitActionPerformed
 		if (needsSaving) {
 			new JOptionPane();
-			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+			String msg;
+		
+			int value = JOptionPane.showConfirmDialog(this, saveMsg(), "Save changes", 0, 2);
 			if (value == 0) {
-				saveProcess();
+				saveAsProcess();
 			} else if (value == 1) {
 				System.exit(0);
 			} else {
@@ -1023,33 +1029,38 @@ public class ASCView extends javax.swing.JFrame {
 	 * emulating, otherwise, display error.
 	 */
 	private void emulateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emulateButtonActionPerformed
-		if (mc.getAssembleStatus()) {
-
-			if (mc.getStatus()) {
-				errorConsole.setForeground(new Color(0, 119, 64));
-				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-				return;
-			}
-
-
-			boolean complete = mc.emulate();
-
-			if (mc.terminated()) {
-				errorConsole.setForeground(new Color(0, 119, 64));
-				errorConsole.setText("PROGRAM SUCCESSFULLY TERMINATED");
-				return;
-			}
-
-			if (complete) {
-				errorConsole.setForeground(new Color(0, 119, 64));
-				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-			} else {
-				errorConsole.setForeground(new Color(186, 31, 57));
-				errorConsole.setText(EmulatorControl.returnErrors());
-			}
-		} else {
+		if (textAreaChanged) {
 			errorConsole.setForeground(new Color(186, 31, 57));
 			errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+		} else {
+			if (mc.getAssembleStatus()) {
+
+				if (mc.getStatus()) {
+					errorConsole.setForeground(new Color(0, 119, 64));
+					errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+					return;
+				}
+
+
+				boolean complete = mc.emulate();
+
+				if (mc.terminated()) {
+					errorConsole.setForeground(new Color(0, 119, 64));
+					errorConsole.setText("PROGRAM SUCCESSFULLY TERMINATED");
+					return;
+				}
+
+				if (complete) {
+					errorConsole.setForeground(new Color(0, 119, 64));
+					errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+				} else {
+					errorConsole.setForeground(new Color(186, 31, 57));
+					errorConsole.setText(EmulatorControl.returnErrors());
+				}
+			} else {
+				errorConsole.setForeground(new Color(186, 31, 57));
+				errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+			}
 		}
 	}//GEN-LAST:event_emulateButtonActionPerformed
 
@@ -1059,9 +1070,15 @@ public class ASCView extends javax.swing.JFrame {
 	private void mbOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbOpenActionPerformed  
 		if (needsSaving) {
 			new JOptionPane();
-			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+			int value = JOptionPane.showConfirmDialog(this, saveMsg(), "Save changes", 0, 2);
 			if (value == 0) {
-				saveProcess();
+				if (curFile == null) {
+					saveAsProcess();
+				} else {
+					saveProcess(curFile);
+				}
+			} else if (value == -1) {
+				return;
 			}
 		}
 		openFileChooser.setDialogTitle("Open");
@@ -1072,6 +1089,7 @@ public class ASCView extends javax.swing.JFrame {
 				// What to do with the file  
 				textarea.read(new FileReader(file.getAbsolutePath()), null);
 				setTitle("ASC Assembler & Emulator  -  " + file.getName());
+				curFile = openFileChooser.getSelectedFile();
 			} catch (IOException ex) {
 			}
 		}
@@ -1079,14 +1097,17 @@ public class ASCView extends javax.swing.JFrame {
 		textarea.getDocument().addUndoableEditListener(textarea);  //re-implement listener for undo/redo actions
 		initLineListener();	//re-implement listener for line number updating
 		lines.setText(getText());	//Reset line numbers
+		resetMod();
+		errorConsole.setText("");
+		textAreaChanged = true;
 	}//GEN-LAST:event_mbOpenActionPerformed  
 
 	/**
-	 * Save file; calls the saveProcess method.
+	 * Save file; calls the saveAsProcess method.
 	 */
 	private void mbSaveAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveAsActionPerformed
 	{//GEN-HEADEREND:event_mbSaveAsActionPerformed
-		saveProcess();
+		saveAsProcess();
 		needsSaving = false;
 		justSaved = true;
 	}//GEN-LAST:event_mbSaveAsActionPerformed
@@ -1098,25 +1119,30 @@ public class ASCView extends javax.swing.JFrame {
 	 */
 	private void stepActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_stepActionPerformed
 	{//GEN-HEADEREND:event_stepActionPerformed
-		if (mc.getAssembleStatus()) {
-			mc.emulateStep();
-			errorConsole.setForeground(new Color(0, 119, 64));
-			errorConsole.setText("STEP EMULATION - STEP COMPLETE");
-
-			String errors = EmulatorControl.returnErrors();
-
-			if (errors.length() != 0) {
-				errorConsole.setForeground(new Color(186, 31, 57));
-				errorConsole.setText(errors);
-			}
-
-			if (mc.getStatus()) {
-				errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
-				return;
-			}
-		} else {
+		if (textAreaChanged) {
 			errorConsole.setForeground(new Color(186, 31, 57));
 			errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+		} else {
+			if (mc.getAssembleStatus()) {
+				mc.emulateStep();
+				errorConsole.setForeground(new Color(0, 119, 64));
+				errorConsole.setText("STEP EMULATION - STEP COMPLETE");
+
+				String errors = EmulatorControl.returnErrors();
+
+				if (errors.length() != 0) {
+					errorConsole.setForeground(new Color(186, 31, 57));
+					errorConsole.setText(errors);
+				}
+
+				if (mc.getStatus()) {
+					errorConsole.setText("PROGRAM SUCCESSFULLY RAN\nPLEASE RESET TO RUN AGAIN");
+					return;
+				}
+			} else {
+				errorConsole.setForeground(new Color(186, 31, 57));
+				errorConsole.setText("PLEASE ASSEMBLE PROGRAM FIRST");
+			}
 		}
 	}//GEN-LAST:event_stepActionPerformed
 
@@ -1143,15 +1169,21 @@ public class ASCView extends javax.swing.JFrame {
 	{//GEN-HEADEREND:event_mbFileActionPerformed
 		if (needsSaving) {
 			new JOptionPane();
-			int value = JOptionPane.showConfirmDialog(this, "Would you like to save changes?", "Save changes", 0, 2);
+			int value = JOptionPane.showConfirmDialog(this, saveMsg(), "Save changes", 0, 2);
 
 			if (value == 0) {
-				saveProcess();
+				if (curFile == null) {
+					saveAsProcess();
+				} else {
+					saveProcess(curFile);
+				}
+				resetMod();
 				errorConsole.setText("");
 				needsSaving = false;
 				textarea.setText("");
 				textarea.resetUndoManager();
-				saveFileChooser.setSelectedFile(null);
+				curFile = null;
+				saveFileChooser.setSelectedFile(new File(""));
 				setTitle("ASC Assembler & Emulator");
 			} else if (value == 1) {
 				resetMod();
@@ -1159,7 +1191,8 @@ public class ASCView extends javax.swing.JFrame {
 				needsSaving = false;
 				textarea.setText("");
 				textarea.resetUndoManager();
-				saveFileChooser.setSelectedFile(null);
+				curFile = null;
+				saveFileChooser.setSelectedFile(new File(""));
 				setTitle("ASC Assembler & Emulator");
 			} else {
 				return;
@@ -1169,8 +1202,9 @@ public class ASCView extends javax.swing.JFrame {
 			errorConsole.setText("");
 			needsSaving = false;
 			textarea.setText("");
-			textarea.resetUndoManager();
-			saveFileChooser.setSelectedFile(null);
+			curFile = null;
+			saveFileChooser.setSelectedFile(new File(""));
+			curFile = null;
 			setTitle("ASC Assembler & Emulator");
 			justSaved = true;
 		}
@@ -1194,23 +1228,29 @@ public class ASCView extends javax.swing.JFrame {
 	private void mbSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mbSaveActionPerformed
 	{//GEN-HEADEREND:event_mbSaveActionPerformed
 		needsSaving = false;
-		File file = saveFileChooser.getSelectedFile();
-		if (file == null) {
-			saveProcess();
+		if (curFile == null) {
+			saveAsProcess();
 		} else {
-			try {
-				String s = textarea.getText();
+			saveProcess(curFile);
 
-				FileWriter fw = new FileWriter(file);
-				fw.write(s);
-				fw.close();
-			} catch (Exception e) {
-			}
 		}
 		needsSaving = false;
 		justSaved = true;
 	}//GEN-LAST:event_mbSaveActionPerformed
 
+	/**
+	 * Creates save message
+	 */
+	public String saveMsg(){
+		String msg;
+		if (curFile == null){
+			msg = "Would you like to save changes?";
+		}
+		else{
+			msg = "Would you like to save changes to " + curFile.getName() + "?";
+		}
+		return msg;
+	}
 	/**
 	 * Creates an instance of the Ref class and displays it.
 	 */
@@ -1283,8 +1323,10 @@ public class ASCView extends javax.swing.JFrame {
 	 */
 	private void decimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_decimalActionPerformed
 	{//GEN-HEADEREND:event_decimalActionPerformed
-		baseMode = true;
-		setDec();
+		if (!baseMode) {
+			baseMode = true;
+			setDec();
+		}
 
 		errorConsole.setForeground(new Color(0, 119, 64));
 		errorConsole.setText("DISPLAYING VALUES IN DECIMAL (BASE 10)");
@@ -1295,9 +1337,10 @@ public class ASCView extends javax.swing.JFrame {
 	 */
 	private void hexadecimalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_hexadecimalActionPerformed
 	{//GEN-HEADEREND:event_hexadecimalActionPerformed
-		baseMode = false;
-		setHex();
-
+		if (baseMode) {
+			baseMode = false;
+			setHex();
+		}
 		errorConsole.setForeground(new Color(0, 119, 64));
 		errorConsole.setText("DISPLAYING VALUES IN HEXADECIMAL (BASE 16)");
 	}//GEN-LAST:event_hexadecimalActionPerformed
@@ -1329,6 +1372,7 @@ public class ASCView extends javax.swing.JFrame {
 	 * Changes all the values in the program to Hexadecimal (Default).
 	 */
 	public void setHex() {
+
 		baseMode = false;
 		accField.setText(format(Integer.toHexString(Integer.parseInt(accField.getText()))));
 		programCounter.setText(format(Integer.toHexString(Integer.parseInt(programCounter.getText()))));
@@ -1339,6 +1383,7 @@ public class ASCView extends javax.swing.JFrame {
 
 		inputField.setText(format(Integer.toHexString(Integer.parseInt(inputField.getText()))));
 		outputField.setText(format(Integer.toHexString(Integer.parseInt(outputField.getText()))));
+
 	}
 
 	/**
@@ -1354,6 +1399,7 @@ public class ASCView extends javax.swing.JFrame {
 
 		inputField.setText(format(Integer.parseInt(inputField.getText(), 16) + ""));
 		outputField.setText(format(Integer.parseInt(outputField.getText(), 16) + ""));
+
 	}
 
 	/**
@@ -1568,9 +1614,13 @@ public class ASCView extends javax.swing.JFrame {
 	/**
 	 * Pulls up a save dialog and asks the user to save.
 	 */
-	private void saveProcess() {
+	private void saveAsProcess() {
 		saveFileChooser.setDialogTitle("Save As...");
+		saveFileChooser.setSelectedFile(curFile);
 		int returnVal = saveFileChooser.showSaveDialog(this);
+		if (returnVal == 1) {
+			return;
+		}
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = null;
@@ -1594,11 +1644,25 @@ public class ASCView extends javax.swing.JFrame {
 					fw.close();
 				} catch (Exception e) {
 				}
+				curFile = new File(file.getName());
 				setTitle("ASC Assembler & Emulator  -  " + file.getName());
 			}
 
 		}
 
+	}
+
+	/**
+	 * Saves to already existing file
+	 */
+	private void saveProcess(File file) {
+		try {
+			String s = textarea.getText();
+			FileWriter fw = new FileWriter(file);
+			fw.write(s);
+			fw.close();
+		} catch (Exception e) {
+		}
 	}
 
 	/**
@@ -1666,9 +1730,6 @@ public class ASCView extends javax.swing.JFrame {
 		resetRegisters();
 		assemble();
 
-		if (baseMode) {
-			setDec();
-		}
 
 		errorConsole.setForeground(new Color(0, 119, 64));
 		errorConsole.setText("PROGRAM SUCCESSFULLY RESET");
@@ -1680,6 +1741,8 @@ public class ASCView extends javax.swing.JFrame {
 	 * any errors that occurred with the assembly process.
 	 */
 	public void assemble() {
+
+
 		String error = mc.assemble(textarea.getText());
 
 		if (mc.getProgram().getHasErrors() == true) {
@@ -1688,16 +1751,21 @@ public class ASCView extends javax.swing.JFrame {
 		} else {
 			try {
 				errorConsole.setForeground(new Color(0, 119, 64));
-				errorConsole.setText("PROGRAM SUCCESSFULLY ASSEMBLED");
 				mnemonicPane.setListData(mc.updateMnemonicPane());
 				hexPane.setListData(mc.updateHexPane());
 				memoryTable = mc.updateMemoryTable(memoryTable);
+				if (baseMode) {
+					programCounter.setText(format(Integer.parseInt(programCounter.getText(), 16) + ""));
+				}
+				errorConsole.setText("PROGRAM SUCCESSFULLY ASSEMBLED");
+				textAreaChanged = false;
 			} catch (Exception e) {
 				resetMod();
 				errorConsole.setForeground(new Color(186, 31, 57));
 				errorConsole.setText("UNEXPECTED ERROR OCCURED DURING ASSEMBLY\nPLEASE CHECK YOUR PROGRAM CAREFULLY");
 			}
 		}
+
 	}
 
 	/**
@@ -1855,9 +1923,10 @@ public class ASCView extends javax.swing.JFrame {
 	public SymbolTable getST() {
 		return mc.getProgram().getSymbolTable();
 	}
+	private boolean textAreaChanged;
 	private boolean justSaved;
 	private boolean needsSaving;
-	private String curFileName;
+	private File curFile;
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private static javax.swing.JTextField OveBit;
 	private static javax.swing.JTextField accField;

@@ -1,4 +1,0 @@
-ASC
-===
-
-A Simple Computer

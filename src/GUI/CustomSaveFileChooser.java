@@ -4,6 +4,7 @@
 package GUI;
 
 import javax.swing.JFileChooser;
+import java.io.*;
 import java.io.File;
 import javax.swing.JOptionPane;
 import java.text.MessageFormat;
@@ -13,7 +14,10 @@ public class CustomSaveFileChooser extends JFileChooser {
 	public void approveSelection() {
 
 		File f = getSelectedFile();
-
+		String filePath = f.getPath();
+		if(!filePath.toUpperCase().endsWith(".ASM")){
+			f = new File(filePath + ".ASM");
+		}
 		if (f.exists()) {
 			String msg = "The file \"{0}\" already exists!\nDo you want to replace it?";
 			msg = MessageFormat.format(msg, new Object[]{f.getName()});
@@ -27,4 +31,5 @@ public class CustomSaveFileChooser extends JFileChooser {
 		super.approveSelection();
 
 	} // end method  
+	
 }
