@@ -12,7 +12,7 @@ class FileFilter extends javax.swing.filechooser.FileFilter
     public boolean accept(File file)
     {
         // Allow only directories, or files with ".ASM" extension
-        return file.isDirectory() || file.getAbsolutePath().endsWith(".ASM");
+        return file.isDirectory() || file.getAbsolutePath().toUpperCase().endsWith(".ASM");
     }
 
     @Override
